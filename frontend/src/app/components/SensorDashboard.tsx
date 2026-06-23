@@ -4,35 +4,62 @@
 import { useEffect, useState } from 'react'
 import PlantMap from './PlantMap'
 
+interface SensorData {
+  gas: number
+  pressure: number
+  temperature: number
+  shift: number
+  permit_active: boolean
+  ai_justification: string
+  blocked_reason: string | null
+  confidence?: number
+  all_reasons?: string[]
+}
+
 export default function SensorDashboard() {
-  const [data, setData] = useState({ 
+  const [data, setData] = useState<SensorData>({ 
     gas: 0, 
     pressure: 0, 
     temperature: 0, 
     shift: 0,
     permit_active: true,
     ai_justification: '',
-    blocked_reason: null as string | null
+    blocked_reason: null
   })
   const [status, setStatus] = useState('Connecting to backend...')
+  
+  const calculateRiskScore = () => {
+    let score = 0
+    score += Math.min(40, (data.gas / 100) * 40)
+    const pressureRisk = Math.max(0, (data.pressure - 1600) / 1200)
+    score += pressureRisk * 30
+    const tempRisk = Math.max(0, (data.temperature - 30) / 50)
+    score += tempRisk * 30
+    return Math.round(score)
+  }
 
+  const riskScore = calculateRiskScore()
+  const riskColor = riskScore > 70 ? 'red' : riskScore > 40 ? 'yellow' : 'green'
+ 
   useEffect(() => {
-    // Connect to the FastAPI WebSocket
-    const ws = new WebSocket('ws://localhost:8000/ws')
+    const ws = new WebSocket(process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:8000/ws')
 
     ws.onopen = () => setStatus('Connected to PLC')
     ws.onmessage = (event) => {
       const parsed = JSON.parse(event.data)
+       console.log('📩 Received from backend:', parsed)  
       setData(prev => ({ ...prev, ...parsed }))
     }
     ws.onclose = () => setStatus('Disconnected')
     ws.onerror = () => setStatus('Connection Error')
 
-    return () => ws.close()
+    // ✅ FIXED: Proper closing braces
+    return () => {
+      if (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING) {
+        ws.close()
+      }
+    }
   }, [])
-
-  // Hackathon Logic: If Gas > 40%, the permit is physically blocked!
-  const isPermitBlocked = data.gas > 40
 
   return (
     <div className="space-y-6">
@@ -77,12 +104,49 @@ export default function SensorDashboard() {
             <p className="text-gray-300 text-sm whitespace-pre-wrap">{data.ai_justification}</p>
           </div>
         )}
+
+        {/* Confidence Score Section */}
+        {!data.permit_active && data.confidence && (
+          <div className="mt-4 p-4 bg-yellow-900/20 rounded-lg border border-yellow-600/50 text-left">
+            <div className="flex justify-between items-center mb-2">
+              <h3 className="text-yellow-400 font-bold">🎯 AI Confidence Level</h3>
+              <span className="text-2xl font-black text-yellow-400">{data.confidence}%</span>
+            </div>
+            
+            <div className="w-full bg-gray-700 rounded-full h-2.5 mb-3">
+              <div 
+                className="bg-yellow-500 h-2.5 rounded-full transition-all duration-500" 
+                style={{ width: `${data.confidence}%` }}
+              ></div>
+            </div>
+
+            <h4 className="text-gray-400 text-xs uppercase font-bold mb-1">Triggered Factors:</h4>
+            <ul className="text-sm text-gray-300 space-y-1">
+              {data.all_reasons?.map((reason: string, i: number) => (
+                <li key={i} className="flex items-start gap-2">
+                  <span className="text-red-400 mt-1">•</span> {reason}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
 
       {/* Live Plant Map */}
       <div className="mt-6">
         <h3 className="text-gray-400 text-sm uppercase font-bold mb-3">Live Plant Telemetry</h3>
         <PlantMap isDanger={!data.permit_active} gasLevel={data.gas} />
+      </div>
+      
+      {/* AI Risk Score */}
+      <div className="bg-gray-800 p-6 rounded-xl border border-gray-700">
+        <h3 className="text-gray-400 text-sm uppercase">AI Risk Score</h3>
+        <p className={`text-5xl font-black mt-2 text-${riskColor}-500`}>
+          {riskScore}/100
+        </p>
+        <p className="text-gray-500 text-xs mt-2">
+          {riskScore > 70 ? '🚨 CRITICAL' : riskScore > 40 ? '⚠️ ELEVATED' : '✅ NORMAL'}
+        </p>
       </div>
     </div>
   )
