@@ -211,6 +211,22 @@ export default function SensorDashboard() {
           </div>
         </div>
       </div>
+      // Add this right below the Connection Status div
+      <div className="flex justify-center gap-4">
+        <button 
+          onClick={() => fetch('http://localhost:8000/force-emergency', { method: 'POST' })}
+          className="px-6 py-2 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg shadow-lg transition-all"
+        >
+          🚨 SIMULATE EMERGENCY (Force Gas to 85%)
+        </button>
+        <button 
+          onClick={() => fetch('http://localhost:8000/reset-sensors', { method: 'POST' })} // Optional reset
+          className="px-6 py-2 bg-gray-600 hover:bg-gray-700 text-white font-bold rounded-lg shadow-lg transition-all"
+        >
+          🔄 Reset to Normal
+        </button>
+      </div>
     </div>
+    
   )
 }
