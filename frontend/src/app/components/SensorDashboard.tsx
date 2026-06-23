@@ -3,10 +3,8 @@
 
 import { useEffect, useState } from 'react'
 import PlantMap from './PlantMap'
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, Legend } from 'recharts'
-import '@/styles/dashboard.css' // 👈 Import the new CSS
-import '@/app/components/ResizableChart'
 import ResizableChart from '@/app/components/ResizableChart'
+import '@/styles/dashboard.css'
 
 interface SensorData {
   gas: number
@@ -65,23 +63,39 @@ export default function SensorDashboard() {
     }
   }, [])
 
+  const isConnected = status === 'Connected to PLC'
+
   return (
     <div className="dashboard-wrapper">
       <div className="w-full h-full space-y-6 flex flex-col">
         
+        {/* Connection Status Bar */}
+        <div className={`connection-status w-full px-6 py-3 rounded-lg border-2 flex items-center justify-between ${
+          isConnected 
+            ? 'connected bg-green-500/10 border-green-500/50' 
+            : 'disconnected bg-red-500/10 border-red-500/50'
+        }`}>
+          <div className="flex items-center gap-3">
+            <div className={`w-3 h-3 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'} animate-pulse`}></div>
+            <span className={`font-bold text-sm uppercase tracking-wider ${isConnected ? 'text-green-400' : 'text-red-400'}`}>
+              Backend Connection: {isConnected ? 'CONNECTED' : status.toUpperCase()}
+            </span>
+          </div>
+          <div className={`text-xs ${isConnected ? 'text-green-300' : 'text-red-300'}`}>
+            {isConnected ? '✓ Receiving live telemetry' : '⚠ Waiting for data stream...'}
+          </div>
+        </div>
+
         {/* Header */}
-        <div className="flex justify-between items-center mb-8">
+        <div className="flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold text-white">Industrial Safety Monitor</h1>
             <p className="text-slate-400 text-sm mt-1">Digital Permit Intelligence Agent v1.0</p>
           </div>
-          <div className={`px-4 py-2 rounded-full text-sm font-bold ${status === 'Connected to PLC' ? 'bg-green-500/20 text-green-400 border border-green-500/30' : 'bg-red-500/20 text-red-400 border border-red-500/30'}`}>
-            {status === 'Connected to PLC' ? '● ONLINE' : '● OFFLINE'}
-          </div>
         </div>
 
         {/* Control Buttons */}
-        <div className="flex justify-center gap-4 mb-8">
+        <div className="flex justify-center gap-4">
           <button 
             onClick={() => fetch('http://localhost:8000/force-emergency', { method: 'POST' })}
             className="action-btn emergency"
@@ -96,8 +110,8 @@ export default function SensorDashboard() {
           </button>
         </div>
 
-        {/* Sensor Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* Sensor Grid with Constraints */}
+        <div className="sensor-grid">
           <div className={`glass-card p-6 stat-box ${data.gas > 40 ? 'border-red-500/50' : ''}`}>
             <h3 className="stat-label">Gas Level</h3>
             <p className={`stat-value ${data.gas > 40 ? 'danger' : ''}`}>{data.gas}%</p>
@@ -113,37 +127,18 @@ export default function SensorDashboard() {
           </div>
         </div>
 
-        {/* Live Chart */}
-        {/* <div className="glass-card p-6">
-          <h3 className="stat-label mb-4">📈 Live Telemetry Trend</h3>
-          <div className="chart-container" style={{ height: '300px' }}>
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={chartData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="time" stroke="#94a3b8" fontSize={10} />
-                <YAxis stroke="#94a3b8" fontSize={10} />
-                <Tooltip />
-                <ReferenceLine y={40} stroke="#ef4444" strokeDasharray="3 3" label={{ value: 'DANGER THRESHOLD', fill: '#ef4444', fontSize: 10 }} />
-                <Line type="monotone" dataKey="gas" stroke="#10b981" strokeWidth={3} dot={false} activeDot={{ r: 6 }} />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        </div> */}
+        {/* Live Chart with Bounds */}
+        <ResizableChart data={chartData} />
 
-          <ResizableChart data = {chartData}/>
-
-        {/* Permit Status */}
-        {/* 📐 NEW: 1/3 Left + 2/3 Right Layout */}
-        {/* <div className="grid grid-cols-1 lg:grid-cols-3 gap-6"> */}
-        {/* 📐 NEW: 1/3 Left + 2/3 Right Layout (Stretches to fill height) */}
+        {/* Main Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 flex-1">
           
-          {/* LEFT COLUMN: Fixed space for Permit Status & AI Justification */}
+          {/* LEFT: Permit Status with Fixed Height */}
           <div className="lg:col-span-1">
             <div className={`alert-box ${!data.permit_active ? 'danger' : 'safe'}`}>
               <h2>Digital Permit Intelligence</h2>
               <p className="status-text">
-                {data.permit_active ? '🟢 PERMIT ACTIVE' : ' PERMIT BLOCKED'}
+                {data.permit_active ? '🟢 PERMIT ACTIVE' : '🔴 PERMIT BLOCKED'}
               </p>
               <p className="text-slate-400 text-sm mb-4">
                 {data.permit_active 
@@ -151,7 +146,6 @@ export default function SensorDashboard() {
                   : 'PLC Interlock Triggered. All hot work is immediately suspended.'}
               </p>
               
-              {/* AI Justification Box */}
               {data.ai_justification && (
                 <div className="justification-box">
                   <h3 className="text-yellow-400 font-bold text-xs uppercase mb-2">🧠 AI Safety Justification</h3>
@@ -159,7 +153,6 @@ export default function SensorDashboard() {
                 </div>
               )}
 
-              {/* Confidence Score (Only show if blocked) */}
               {!data.permit_active && data.confidence && (
                 <div className="mt-4">
                   <div className="flex justify-between text-xs text-slate-400 mb-1">
@@ -174,18 +167,18 @@ export default function SensorDashboard() {
             </div>
           </div>
 
-          {/* RIGHT COLUMN: Map and Risk Score */}
+          {/* RIGHT: Map and Risk Score */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Live Plant Map */}
+            {/* Live Plant Map with Constraints */}
             <div className="glass-card p-6">
               <h3 className="stat-label mb-4">📍 Live Plant Telemetry (Zone B)</h3>
-              <div style={{ height: '350px', borderRadius: '12px', overflow: 'hidden' }}>
+              <div className="map-container">
                 <PlantMap isDanger={!data.permit_active} gasLevel={data.gas} />
               </div>
             </div>
             
             {/* AI Risk Score */}
-            <div className="glass-card p-6 flex justify-between items-center">
+            <div className="glass-card p-6 flex justify-between items-center" style={{ minHeight: '120px' }}>
               <div>
                 <h3 className="stat-label mb-1">AI Risk Score</h3>
                 <p className="text-slate-400 text-xs uppercase tracking-wider">

@@ -1069,3 +1069,75 @@ ModuleNotFoundError("No module named 'faiss.swigfaiss_avx2'")
 2026-06-24 00:10:03,291 | INFO | PERMIT ACTIVE | Gas=21.6% | Pressure=1749.0 bar | Temp=43.9°C | PermitBlocked=False | Confidence=0% | Reason=None
 2026-06-24 00:10:05,293 | INFO | PERMIT ACTIVE | Gas=22.1% | Pressure=1762.0 bar | Temp=43.9°C | PermitBlocked=False | Confidence=0% | Reason=None
 2026-06-24 00:10:07,295 | INFO | PERMIT ACTIVE | Gas=22.9% | Pressure=1774.0 bar | Temp=43.9°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 00:54:42,561 | INFO | No device provided, using cpu
+2026-06-24 00:54:43,163 | INFO | HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/modules.json "HTTP/1.1 307 Temporary Redirect"
+2026-06-24 00:54:43,164 | WARNING | Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+2026-06-24 00:54:43,198 | INFO | HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-MiniLM-L6-v2/1110a243fdf4706b3f48f1d95db1a4f5529b4d41/modules.json "HTTP/1.1 200 OK"
+2026-06-24 00:54:43,570 | INFO | HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/config_sentence_transformers.json "HTTP/1.1 307 Temporary Redirect"
+2026-06-24 00:54:43,608 | INFO | HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-MiniLM-L6-v2/1110a243fdf4706b3f48f1d95db1a4f5529b4d41/config_sentence_transformers.json "HTTP/1.1 200 OK"
+2026-06-24 00:54:43,609 | INFO | Loading SentenceTransformer model from sentence-transformers/all-MiniLM-L6-v2.
+2026-06-24 00:54:43,878 | INFO | HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/config_sentence_transformers.json "HTTP/1.1 307 Temporary Redirect"
+2026-06-24 00:54:43,918 | INFO | HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-MiniLM-L6-v2/1110a243fdf4706b3f48f1d95db1a4f5529b4d41/config_sentence_transformers.json "HTTP/1.1 200 OK"
+2026-06-24 00:54:44,185 | INFO | HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
+2026-06-24 00:54:44,218 | INFO | HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-MiniLM-L6-v2/1110a243fdf4706b3f48f1d95db1a4f5529b4d41/README.md "HTTP/1.1 200 OK"
+2026-06-24 00:54:44,492 | INFO | HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/modules.json "HTTP/1.1 307 Temporary Redirect"
+2026-06-24 00:54:44,527 | INFO | HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-MiniLM-L6-v2/1110a243fdf4706b3f48f1d95db1a4f5529b4d41/modules.json "HTTP/1.1 200 OK"
+2026-06-24 00:54:44,800 | INFO | HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/sentence_bert_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-06-24 00:54:44,844 | INFO | HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-MiniLM-L6-v2/1110a243fdf4706b3f48f1d95db1a4f5529b4d41/sentence_bert_config.json "HTTP/1.1 200 OK"
+2026-06-24 00:54:45,107 | INFO | HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/adapter_config.json "HTTP/1.1 404 Not Found"
+2026-06-24 00:54:45,517 | INFO | HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-06-24 00:54:45,547 | INFO | HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-MiniLM-L6-v2/1110a243fdf4706b3f48f1d95db1a4f5529b4d41/config.json "HTTP/1.1 200 OK"
+2026-06-24 00:54:46,336 | INFO | HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/processor_config.json "HTTP/1.1 404 Not Found"
+2026-06-24 00:54:46,643 | INFO | HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-06-24 00:54:46,950 | INFO | HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/video_preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-06-24 00:54:47,258 | INFO | HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-06-24 00:54:47,667 | INFO | HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-06-24 00:54:47,697 | INFO | HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-MiniLM-L6-v2/1110a243fdf4706b3f48f1d95db1a4f5529b4d41/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-06-24 00:54:47,965 | INFO | HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-06-24 00:54:48,000 | INFO | HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-MiniLM-L6-v2/1110a243fdf4706b3f48f1d95db1a4f5529b4d41/config.json "HTTP/1.1 200 OK"
+2026-06-24 00:54:48,281 | INFO | HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-06-24 00:54:48,317 | INFO | HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-MiniLM-L6-v2/1110a243fdf4706b3f48f1d95db1a4f5529b4d41/config.json "HTTP/1.1 200 OK"
+2026-06-24 00:54:48,588 | INFO | HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-06-24 00:54:48,628 | INFO | HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-MiniLM-L6-v2/1110a243fdf4706b3f48f1d95db1a4f5529b4d41/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-06-24 00:54:48,895 | INFO | HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/all-MiniLM-L6-v2/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 404 Not Found"
+2026-06-24 00:54:49,203 | INFO | HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/all-MiniLM-L6-v2/tree/main?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-06-24 00:54:49,715 | INFO | HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/1_Pooling/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-06-24 00:54:49,759 | INFO | HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-MiniLM-L6-v2/1110a243fdf4706b3f48f1d95db1a4f5529b4d41/1_Pooling%2Fconfig.json "HTTP/1.1 200 OK"
+2026-06-24 00:54:50,227 | INFO | HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/all-MiniLM-L6-v2 "HTTP/1.1 200 OK"
+2026-06-24 00:54:51,881 | INFO | Loading faiss with AVX512 support.
+2026-06-24 00:54:51,881 | INFO | Could not load library with AVX512 support due to:
+ModuleNotFoundError("No module named 'faiss.swigfaiss_avx512'")
+2026-06-24 00:54:51,881 | INFO | Loading faiss with AVX2 support.
+2026-06-24 00:54:51,881 | INFO | Could not load library with AVX2 support due to:
+ModuleNotFoundError("No module named 'faiss.swigfaiss_avx2'")
+2026-06-24 00:54:51,881 | INFO | Loading faiss.
+2026-06-24 00:54:51,929 | INFO | Successfully loaded faiss.
+2026-06-24 00:54:52,019 | INFO | PERMIT ACTIVE | Gas=13.7% | Pressure=1803.0 bar | Temp=42.4°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 00:54:54,021 | INFO | PERMIT ACTIVE | Gas=14.0% | Pressure=1801.0 bar | Temp=42.5°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 00:54:56,022 | INFO | PERMIT ACTIVE | Gas=14.3% | Pressure=1803.0 bar | Temp=42.5°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 00:54:58,023 | INFO | PERMIT ACTIVE | Gas=14.5% | Pressure=1803.0 bar | Temp=42.5°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 00:55:00,025 | INFO | PERMIT ACTIVE | Gas=14.7% | Pressure=1805.0 bar | Temp=42.4°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 00:55:02,026 | INFO | PERMIT ACTIVE | Gas=15.2% | Pressure=1805.0 bar | Temp=42.3°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 00:55:04,027 | INFO | PERMIT ACTIVE | Gas=15.7% | Pressure=1804.0 bar | Temp=42.1°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 00:55:06,029 | INFO | PERMIT ACTIVE | Gas=16.2% | Pressure=1798.0 bar | Temp=42.1°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 00:55:08,030 | INFO | PERMIT ACTIVE | Gas=17.0% | Pressure=1791.0 bar | Temp=42.1°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 00:55:10,033 | INFO | PERMIT ACTIVE | Gas=17.8% | Pressure=1781.0 bar | Temp=42.1°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 00:55:12,034 | INFO | PERMIT ACTIVE | Gas=18.6% | Pressure=1773.0 bar | Temp=42.1°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 00:55:14,036 | INFO | PERMIT ACTIVE | Gas=19.4% | Pressure=1765.0 bar | Temp=42.2°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 00:55:16,037 | INFO | PERMIT ACTIVE | Gas=20.3% | Pressure=1761.0 bar | Temp=42.2°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 00:55:18,038 | INFO | PERMIT ACTIVE | Gas=21.2% | Pressure=1757.0 bar | Temp=42.2°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 00:55:20,040 | INFO | PERMIT ACTIVE | Gas=22.0% | Pressure=1754.0 bar | Temp=42.3°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 00:55:22,042 | INFO | PERMIT ACTIVE | Gas=22.7% | Pressure=1752.0 bar | Temp=42.4°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 00:55:24,044 | INFO | PERMIT ACTIVE | Gas=23.4% | Pressure=1754.0 bar | Temp=42.5°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 00:55:26,046 | INFO | PERMIT ACTIVE | Gas=24.0% | Pressure=1751.0 bar | Temp=42.5°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 00:55:28,048 | INFO | PERMIT ACTIVE | Gas=24.6% | Pressure=1753.0 bar | Temp=42.6°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 00:55:30,051 | INFO | PERMIT ACTIVE | Gas=25.3% | Pressure=1753.0 bar | Temp=42.7°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 00:55:32,053 | INFO | PERMIT ACTIVE | Gas=26.1% | Pressure=1753.0 bar | Temp=42.7°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 00:55:34,056 | INFO | PERMIT ACTIVE | Gas=26.7% | Pressure=1751.0 bar | Temp=42.6°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 00:55:36,059 | INFO | PERMIT ACTIVE | Gas=27.2% | Pressure=1753.0 bar | Temp=42.6°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 00:55:38,061 | INFO | PERMIT ACTIVE | Gas=27.6% | Pressure=1753.0 bar | Temp=42.7°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 00:55:40,063 | INFO | PERMIT ACTIVE | Gas=27.7% | Pressure=1754.0 bar | Temp=42.8°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 00:55:42,065 | INFO | PERMIT ACTIVE | Gas=28.0% | Pressure=1752.0 bar | Temp=42.9°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 00:55:44,068 | INFO | PERMIT ACTIVE | Gas=28.6% | Pressure=1749.0 bar | Temp=43.0°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 00:55:46,070 | INFO | PERMIT ACTIVE | Gas=29.2% | Pressure=1746.0 bar | Temp=43.1°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 00:55:48,072 | INFO | PERMIT ACTIVE | Gas=29.8% | Pressure=1742.0 bar | Temp=43.1°C | PermitBlocked=False | Confidence=0% | Reason=None
