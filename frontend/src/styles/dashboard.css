@@ -1,0 +1,262 @@
+/* frontend/src/styles/dashboard.css */
+
+/* 1. Base Dashboard Background - Now a 95% Floating App Window */
+.dashboard-wrapper {
+  background-color: #0f172a;
+  background-image: 
+    radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), 
+    radial-gradient(at 50% 0%, hsla(225,39%,30%,1) 0, transparent 50%), 
+    radial-gradient(at 100% 0%, hsla(339,49%,30%,1) 0, transparent 50%);
+  
+  /* FULL SCREEN DIMENSIONS */
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  padding: 2rem;
+  
+  /* Layout & Scrolling */
+  overflow-y: auto;
+  overflow-x: hidden;
+  box-sizing: border-box;
+  
+  color: #f8fafc;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+/* Ensure the body/html doesn't have white margins */
+html, body {
+  margin: 0;
+  padding: 0;
+  background-color: #0f172a; /* Matches dashboard to prevent white flash */
+  overflow: hidden; /* Prevents double scrollbars */
+}
+/* Custom Scrollbar for the 95% window */
+.dashboard-wrapper::-webkit-scrollbar {
+  width: 8px;
+}
+.dashboard-wrapper::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.5);
+}
+.dashboard-wrapper::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+.dashboard-wrapper::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* 2. Glassmorphism Cards */
+.glass-card {
+  background: rgba(30, 41, 59, 0.6); /* Semi-transparent slate */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.glass-card:hover {
+  border-color: rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+}
+
+/* 3. Typography & Stats */
+.stat-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+.stat-value {
+  font-size: 3rem;
+  font-weight: 800;
+  color: #f8fafc;
+  transition: all 0.3s ease;
+  font-variant-numeric: tabular-nums; /* Prevents numbers from jumping */
+}
+
+.stat-value.danger {
+  color: #ef4444;
+  text-shadow: 0 0 15px rgba(239, 68, 68, 0.6);
+  animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+/* 4. Alert Box Animations */
+/* 4. Alert Box (Now styled as a Left Sidebar Panel) */
+.alert-box {
+  text-align: left; /* Changed from center to left */
+  padding: 2rem;
+  border-radius: 16px;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  height: 100%; /* Ensures it fills the column height */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.alert-box.safe {
+  background: rgba(34, 197, 94, 0.05);
+  border: 1px solid rgba(34, 197, 94, 0.2);
+  box-shadow: 0 0 30px rgba(34, 197, 94, 0.05);
+}
+
+.alert-box.danger {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  box-shadow: 0 0 30px rgba(239, 68, 68, 0.2);
+  animation: pulse-red 2s infinite;
+}
+
+/* Make the big status text look good on the left */
+.alert-box h2 {
+  font-size: 1.2rem;
+  color: #94a3b8;
+  margin-bottom: 1rem;
+}
+
+.alert-box .status-text {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #f8fafc;
+  line-height: 1.2;
+  margin-bottom: 1.5rem;
+}
+
+/* Justification box inside the sidebar */
+.justification-box {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 1rem;
+  margin-top: auto; /* Pushes it to the bottom if there's extra space */
+}
+
+/* 5. Modern Buttons */
+.action-btn {
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.action-btn.emergency {
+  background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+  color: white;
+  box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+}
+
+.action-btn.emergency:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 25px rgba(239, 68, 68, 0.6);
+}
+
+.action-btn.reset {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  color: white;
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+}
+
+.action-btn.reset:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 25px rgba(59, 130, 246, 0.6);
+}
+
+/* 6. Chart Customization */
+.chart-container {
+  background: rgba(15, 23, 42, 0.5);
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.recharts-cartesian-grid-horizontal line,
+.recharts-cartesian-grid-vertical line {
+  stroke: rgba(255, 255, 255, 0.05);
+}
+
+.recharts-default-tooltip {
+  background-color: rgba(15, 23, 42, 0.95) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 8px !important;
+  color: #f8fafc !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+}
+
+/* 7. Resizable Container */
+.resizable-container {
+  position: relative;
+  min-height: 200px;
+  min-width: 300px;
+  transition: box-shadow 0.2s ease;
+}
+
+.resizable-container.resizing {
+  transition: none;
+  user-select: none;
+}
+
+/* Resize Handles */
+.resize-handle {
+  position: absolute;
+  z-index: 10;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.resizable-container:hover .resize-handle {
+  opacity: 1;
+}
+
+/* Corner Handles */
+.resize-handle-nw { top: -4px; left: -4px; width: 12px; height: 12px; cursor: nw-resize; }
+.resize-handle-ne { top: -4px; right: -4px; width: 12px; height: 12px; cursor: ne-resize; }
+.resize-handle-sw { bottom: -4px; left: -4px; width: 12px; height: 12px; cursor: sw-resize; }
+.resize-handle-se { bottom: -4px; right: -4px; width: 12px; height: 12px; cursor: se-resize; }
+
+/* Edge Handles */
+.resize-handle-n { top: -4px; left: 20px; right: 20px; height: 8px; cursor: n-resize; }
+.resize-handle-s { bottom: -4px; left: 20px; right: 20px; height: 8px; cursor: s-resize; }
+.resize-handle-e { top: 20px; right: -4px; bottom: 20px; width: 8px; cursor: e-resize; }
+.resize-handle-w { top: 20px; left: -4px; bottom: 20px; width: 8px; cursor: w-resize; }
+
+/* Visible resize indicator */
+.resize-handle::after {
+  content: '';
+  position: absolute;
+  background: rgba(59, 130, 246, 0.6);
+  border-radius: 2px;
+}
+
+.resize-handle-nw::after, .resize-handle-se::after {
+  width: 8px; height: 8px;
+}
+.resize-handle-ne::after, .resize-handle-sw::after {
+  width: 8px; height: 8px;
+}
+.resize-handle-n::after, .resize-handle-s::after {
+  width: 20px; height: 4px;
+  left: 50%; transform: translateX(-50%);
+}
+.resize-handle-e::after, .resize-handle-w::after {
+  width: 4px; height: 20px;
+  top: 50%; transform: translateY(-50%);
+}
+
+/* Resize visual feedback */
+.resizable-container:hover {
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+}

@@ -3,6 +3,10 @@
 
 import { useEffect, useState } from 'react'
 import PlantMap from './PlantMap'
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, Legend } from 'recharts'
+import '@/styles/dashboard.css' // 👈 Import the new CSS
+import '@/app/components/ResizableChart'
+import ResizableChart from '@/app/components/ResizableChart'
 
 interface SensorData {
   gas: number
@@ -18,24 +22,11 @@ interface SensorData {
 
 export default function SensorDashboard() {
   const [data, setData] = useState<SensorData>({ 
-    gas: 0, 
-    pressure: 0, 
-    temperature: 0, 
-    shift: 0,
-    permit_active: true,
-    ai_justification: '',
-    blocked_reason: null
+    gas: 0, pressure: 0, temperature: 0, shift: 0,
+    permit_active: true, ai_justification: '', blocked_reason: null
   })
   const [status, setStatus] = useState('Connecting to backend...')
-  
-  // 🧠 NEW: Self-Harnessing AI State (Simulated for Demo)
-  const [aiStatus, setAiStatus] = useState({
-    isLearning: false,
-    learningProgress: 100, // Start at 100% to show it's "trained"
-    dynamicGasThreshold: 38.5, 
-    currentSigma: 0.0,
-    falseAlarmCount: 2 // Human-in-the-loop overrides
-  })
+  const [chartData, setChartData] = useState<{ time: string, gas: number }[]>([])
 
   const calculateRiskScore = () => {
     let score = 0
@@ -57,6 +48,12 @@ export default function SensorDashboard() {
     ws.onmessage = (event) => {
       const parsed = JSON.parse(event.data)
       setData(prev => ({ ...prev, ...parsed }))
+      
+      const now = new Date().toLocaleTimeString()
+      setChartData(prev => {
+        const newData = [...prev, { time: now, gas: parsed.gas }]
+        return newData.length > 30 ? newData.slice(-30) : newData
+      })
     }
     ws.onclose = () => setStatus('Disconnected')
     ws.onerror = () => setStatus('Connection Error')
@@ -68,165 +65,139 @@ export default function SensorDashboard() {
     }
   }, [])
 
-  // 🧠 NEW: Simulate Self-Harnessing AI adapting to the plant in real-time
-  useEffect(() => {
-    if (data.gas > 0) {
-      // Simulate dynamic threshold calculation (e.g., moving average + 2 std dev)
-      const newThreshold = Math.max(35, data.gas + 5) 
-      const sigma = data.gas > newThreshold ? ((data.gas - newThreshold) / 2).toFixed(2) : "0.00"
-      
-      setAiStatus(prev => ({
-        ...prev,
-        dynamicGasThreshold: parseFloat(newThreshold.toFixed(1)),
-        currentSigma: parseFloat(sigma as string)
-      }))
-    }
-  }, [data.gas])
-
   return (
-    <div className="space-y-6">
-      {/* Connection Status */}
-      <div className={`p-3 rounded-lg text-center font-bold ${status === 'Connected to PLC' ? 'bg-green-900/50 text-green-400' : 'bg-red-900/50 text-red-400'}`}>
-        Backend Status: {status}
-      </div>
-        <div className="flex justify-center gap-4 mt-4">
-        <button 
-          onClick={() => fetch('http://localhost:8000/force-emergency', { method: 'POST' })}
-          className="px-6 py-2 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg shadow-lg transition-all transform hover:scale-105"
-        >
-          🚨 SIMULATE EMERGENCY (Force Gas to 85%)
-        </button>
-        <button 
-          onClick={() => fetch('http://localhost:8000/reset-sensors', { method: 'POST' })}
-          className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow-lg transition-all transform hover:scale-105"
-        >
-           Reset to Normal
-        </button>
-      </div>
-
-      {/* Sensor Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Gas Level */}
-        <div className={`p-6 rounded-xl shadow-lg border-2 ${data.gas > 40 ? 'bg-red-950 border-red-500 animate-pulse' : 'bg-gray-800 border-gray-700'}`}>
-          <h3 className="text-gray-400 text-sm uppercase">Gas Level</h3>
-          <p className="text-4xl font-bold mt-2">{data.gas}%</p>
-          {data.gas > 40 && <p className="text-red-400 font-bold mt-2">⚠️ CRITICAL DANGER</p>}
-        </div>
-
-        {/* Pressure */}
-        <div className="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
-          <h3 className="text-gray-400 text-sm uppercase">Pressure</h3>
-          <p className="text-4xl font-bold mt-2">{data.pressure} <span className="text-lg">bar</span></p>
-        </div>
-
-        {/* Temperature */}
-        <div className="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
-          <h3 className="text-gray-400 text-sm uppercase">Temperature</h3>
-          <p className="text-4xl font-bold mt-2">{data.temperature}°C</p>
-        </div>
-      </div>
-
-      {/* Digital Permit Interlock Status */}
-      <div className={`p-8 rounded-xl text-center border-2 ${!data.permit_active ? 'bg-red-900/30 border-red-600' : 'bg-green-900/30 border-green-600'}`}>
-        <h2 className="text-2xl font-bold mb-2">Digital Permit Intelligence Agent</h2>
-        <p className="text-4xl font-black mt-4">
-          {data.permit_active ? '🟢 PERMIT ACTIVE (Safe to Work)' : '🔴 PERMIT BLOCKED (PLC Interlock Triggered)'}
-        </p>
+    <div className="dashboard-wrapper">
+      <div className="w-full h-full space-y-6 flex flex-col">
         
-        {/* AI Justification Box */}
-        {data.ai_justification && (
-          <div className="mt-6 p-4 bg-black/40 rounded-lg text-left border border-gray-600">
-            <h3 className="text-yellow-400 font-bold mb-2">🧠 AI Safety Justification (RAG):</h3>
-            <p className="text-gray-300 text-sm whitespace-pre-wrap">{data.ai_justification}</p>
+        {/* Header */}
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <h1 className="text-3xl font-bold text-white">Industrial Safety Monitor</h1>
+            <p className="text-slate-400 text-sm mt-1">Digital Permit Intelligence Agent v1.0</p>
           </div>
-        )}
+          <div className={`px-4 py-2 rounded-full text-sm font-bold ${status === 'Connected to PLC' ? 'bg-green-500/20 text-green-400 border border-green-500/30' : 'bg-red-500/20 text-red-400 border border-red-500/30'}`}>
+            {status === 'Connected to PLC' ? '● ONLINE' : '● OFFLINE'}
+          </div>
+        </div>
 
-        {/* Confidence Score Section */}
-        {!data.permit_active && data.confidence && (
-          <div className="mt-4 p-4 bg-yellow-900/20 rounded-lg border border-yellow-600/50 text-left">
-            <div className="flex justify-between items-center mb-2">
-              <h3 className="text-yellow-400 font-bold">🎯 AI Confidence Level</h3>
-              <span className="text-2xl font-black text-yellow-400">{data.confidence}%</span>
+        {/* Control Buttons */}
+        <div className="flex justify-center gap-4 mb-8">
+          <button 
+            onClick={() => fetch('http://localhost:8000/force-emergency', { method: 'POST' })}
+            className="action-btn emergency"
+          >
+            🚨 SIMULATE EMERGENCY
+          </button>
+          <button 
+            onClick={() => fetch('http://localhost:8000/reset-sensors', { method: 'POST' })}
+            className="action-btn reset"
+          >
+            🔄 Reset to Normal
+          </button>
+        </div>
+
+        {/* Sensor Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className={`glass-card p-6 stat-box ${data.gas > 40 ? 'border-red-500/50' : ''}`}>
+            <h3 className="stat-label">Gas Level</h3>
+            <p className={`stat-value ${data.gas > 40 ? 'danger' : ''}`}>{data.gas}%</p>
+            {data.gas > 40 && <p className="text-red-400 font-bold mt-2 text-sm">⚠️ CRITICAL DANGER</p>}
+          </div>
+          <div className="glass-card p-6 stat-box">
+            <h3 className="stat-label">Pressure</h3>
+            <p className="stat-value">{data.pressure} <span className="text-lg text-slate-400">bar</span></p>
+          </div>
+          <div className="glass-card p-6 stat-box">
+            <h3 className="stat-label">Temperature</h3>
+            <p className="stat-value">{data.temperature}°C</p>
+          </div>
+        </div>
+
+        {/* Live Chart */}
+        {/* <div className="glass-card p-6">
+          <h3 className="stat-label mb-4">📈 Live Telemetry Trend</h3>
+          <div className="chart-container" style={{ height: '300px' }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={chartData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="time" stroke="#94a3b8" fontSize={10} />
+                <YAxis stroke="#94a3b8" fontSize={10} />
+                <Tooltip />
+                <ReferenceLine y={40} stroke="#ef4444" strokeDasharray="3 3" label={{ value: 'DANGER THRESHOLD', fill: '#ef4444', fontSize: 10 }} />
+                <Line type="monotone" dataKey="gas" stroke="#10b981" strokeWidth={3} dot={false} activeDot={{ r: 6 }} />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </div> */}
+
+          <ResizableChart data = {chartData}/>
+
+        {/* Permit Status */}
+        {/* 📐 NEW: 1/3 Left + 2/3 Right Layout */}
+        {/* <div className="grid grid-cols-1 lg:grid-cols-3 gap-6"> */}
+        {/* 📐 NEW: 1/3 Left + 2/3 Right Layout (Stretches to fill height) */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 flex-1">
+          
+          {/* LEFT COLUMN: Fixed space for Permit Status & AI Justification */}
+          <div className="lg:col-span-1">
+            <div className={`alert-box ${!data.permit_active ? 'danger' : 'safe'}`}>
+              <h2>Digital Permit Intelligence</h2>
+              <p className="status-text">
+                {data.permit_active ? '🟢 PERMIT ACTIVE' : ' PERMIT BLOCKED'}
+              </p>
+              <p className="text-slate-400 text-sm mb-4">
+                {data.permit_active 
+                  ? 'Environmental parameters are within safe limits. Work may proceed.' 
+                  : 'PLC Interlock Triggered. All hot work is immediately suspended.'}
+              </p>
+              
+              {/* AI Justification Box */}
+              {data.ai_justification && (
+                <div className="justification-box">
+                  <h3 className="text-yellow-400 font-bold text-xs uppercase mb-2">🧠 AI Safety Justification</h3>
+                  <p className="text-slate-300 text-sm whitespace-pre-wrap leading-relaxed">{data.ai_justification}</p>
+                </div>
+              )}
+
+              {/* Confidence Score (Only show if blocked) */}
+              {!data.permit_active && data.confidence && (
+                <div className="mt-4">
+                  <div className="flex justify-between text-xs text-slate-400 mb-1">
+                    <span>AI Confidence</span>
+                    <span className="text-yellow-400 font-bold">{data.confidence}%</span>
+                  </div>
+                  <div className="w-full bg-gray-700 rounded-full h-1.5">
+                    <div className="bg-yellow-500 h-1.5 rounded-full" style={{ width: `${data.confidence}%` }}></div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* RIGHT COLUMN: Map and Risk Score */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Live Plant Map */}
+            <div className="glass-card p-6">
+              <h3 className="stat-label mb-4">📍 Live Plant Telemetry (Zone B)</h3>
+              <div style={{ height: '350px', borderRadius: '12px', overflow: 'hidden' }}>
+                <PlantMap isDanger={!data.permit_active} gasLevel={data.gas} />
+              </div>
             </div>
             
-            <div className="w-full bg-gray-700 rounded-full h-2.5 mb-3">
-              <div 
-                className="bg-yellow-500 h-2.5 rounded-full transition-all duration-500" 
-                style={{ width: `${data.confidence}%` }}
-              ></div>
+            {/* AI Risk Score */}
+            <div className="glass-card p-6 flex justify-between items-center">
+              <div>
+                <h3 className="stat-label mb-1">AI Risk Score</h3>
+                <p className="text-slate-400 text-xs uppercase tracking-wider">
+                  {riskScore > 70 ? '🚨 Critical Risk Detected' : riskScore > 40 ? '⚠️ Elevated Risk' : '✅ Normal Operations'}
+                </p>
+              </div>
+              <p className={`text-6xl font-black text-${riskColor}-500`}>{riskScore}<span className="text-2xl text-slate-500">/100</span></p>
             </div>
+          </div>
 
-            <h4 className="text-gray-400 text-xs uppercase font-bold mb-1">Triggered Factors:</h4>
-            <ul className="text-sm text-gray-300 space-y-1">
-              {data.all_reasons?.map((reason: string, i: number) => (
-                <li key={i} className="flex items-start gap-2">
-                  <span className="text-red-400 mt-1">•</span> {reason}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-      </div>
-
-      {/* Live Plant Map */}
-      <div className="mt-6">
-        <h3 className="text-gray-400 text-sm uppercase font-bold mb-3">Live Plant Telemetry</h3>
-        <PlantMap isDanger={!data.permit_active} gasLevel={data.gas} />
-      </div>
-      
-      {/* AI Risk Score */}
-      <div className="bg-gray-800 p-6 rounded-xl border border-gray-700">
-        <h3 className="text-gray-400 text-sm uppercase">AI Risk Score</h3>
-        <p className={`text-5xl font-black mt-2 text-${riskColor}-500`}>
-          {riskScore}/100
-        </p>
-        <p className="text-gray-500 text-xs mt-2">
-          {riskScore > 70 ? '🚨 CRITICAL' : riskScore > 40 ? '⚠️ ELEVATED' : '✅ NORMAL'}
-        </p>
-      </div>
-
-      {/* 🧠 NEW: AI Self-Harnessing & Adaptive Intelligence Panel */}
-      <div className="bg-gray-800 p-6 rounded-xl border border-gray-700 shadow-lg">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-gray-400 text-sm uppercase font-bold">🧠 AI Self-Harnessing Status</h3>
-          <span className={`px-3 py-1 rounded-full text-xs font-bold ${aiStatus.isLearning ? 'bg-blue-900/50 text-blue-400' : 'bg-green-900/50 text-green-400'}`}>
-            {aiStatus.isLearning ? 'LEARNING PHASE' : 'BASELINE ESTABLISHED'}
-          </span>
-        </div>
-        
-        {/* Learning Progress */}
-        <div className="mb-6">
-          <div className="flex justify-between text-sm mb-1">
-            <span className="text-gray-300">Plant Baseline Training</span>
-            <span className="text-blue-400 font-bold">{aiStatus.learningProgress}%</span>
-          </div>
-          <div className="w-full bg-gray-700 rounded-full h-2">
-            <div className="bg-blue-500 h-2 rounded-full transition-all duration-1000" style={{width: `${aiStatus.learningProgress}%`}}></div>
-          </div>
-          <p className="text-xs text-gray-500 mt-1">AI is continuously adapting to this facility's unique telemetry.</p>
-        </div>
-
-        {/* Dynamic Thresholds & Metrics */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
-          <div className="bg-gray-900 p-4 rounded-lg border border-gray-700">
-            <p className="text-xs text-gray-500 uppercase mb-1">Learned Gas Baseline</p>
-            <p className="text-2xl font-bold text-green-400">{aiStatus.dynamicGasThreshold}%</p>
-            <p className="text-[10px] text-gray-600 mt-1">Dynamically calculated (μ + 2σ)</p>
-          </div>
-          <div className="bg-gray-900 p-4 rounded-lg border border-gray-700">
-            <p className="text-xs text-gray-500 uppercase mb-1">Current Anomaly Sigma</p>
-            <p className={`text-2xl font-bold ${aiStatus.currentSigma > 2 ? 'text-red-400' : 'text-yellow-400'}`}>{aiStatus.currentSigma}σ</p>
-            <p className="text-[10px] text-gray-600 mt-1">Standard deviations from mean</p>
-          </div>
-          <div className="bg-gray-900 p-4 rounded-lg border border-gray-700">
-            <p className="text-xs text-gray-500 uppercase mb-1">Human Overrides (HITL)</p>
-            <p className="text-2xl font-bold text-blue-400">{aiStatus.falseAlarmCount}</p>
-            <p className="text-[10px] text-gray-600 mt-1">False alarms corrected by operators</p>
-          </div>
         </div>
       </div>
-  
     </div>
-    
   )
 }
