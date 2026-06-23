@@ -14,6 +14,11 @@ from permit_agent import permit_agent
 sensor_filter = SensorFilter(window_size=5)
 anomaly_detector = AnomalyDetector()
 
+# Global state for sensor simulation (Allows API to control them)
+current_gas = 12.0
+current_pressure = 1800.0
+current_temp = 42.3
+
 class ConnectionManager:
     def __init__(self):
         self.active_connections: list[WebSocket] = []
@@ -70,11 +75,10 @@ async def websocket_endpoint(websocket: WebSocket):
         manager.disconnect(websocket)
 
 async def generate_sensor_data():
+    global current_gas, current_pressure, current_temp # 👈 ADD THIS
     print("🔥 GENERATE_SENSOR_DATA STARTED!", flush=True)
     
-    gas = 12.0
-    pressure = 1800.0
-    temp = 42.3
+    # Remove the local gas = 12.0, pressure = 1800.0, temp = 42.3 lines here!
     
     print("🎮 Mock sensor simulator started!", flush=True)
     
@@ -84,21 +88,23 @@ async def generate_sensor_data():
             counter += 1
             print(f"\n🔄 --- ITERATION {counter} ---", flush=True)
             
-            # 1. Generate raw values
-            gas += random.uniform(-0.5, 1.8)
-            gas = max(0.0, min(100.0, gas))
-            pressure += random.uniform(-15, 15)
-            pressure = max(1600.0, min(2800.0, pressure))
-            temp += random.uniform(-0.3, 0.4)
-            temp = max(30.0, min(80.0, temp))
+            # 2. Use the GLOBAL variables (current_gas, NOT gas)
+            current_gas += random.uniform(-0.5, 1.8)
+            current_gas = max(0.0, min(100.0, current_gas))
+            
+            current_pressure += random.uniform(-15, 15)
+            current_pressure = max(1600.0, min(2800.0, current_pressure))
+            
+            current_temp += random.uniform(-0.3, 0.4)
+            current_temp = max(30.0, min(80.0, current_temp))
             
             raw_data = {
-                "gas": round(gas, 1),
-                "pressure": round(pressure, 0),
-                "temperature": round(temp, 1),
+                "gas": round(current_gas, 1),
+                "pressure": round(current_pressure, 0),
+                "temperature": round(current_temp, 1),
                 "shift": 0
             }
-            print(f"📊 Raw: Gas={raw_data['gas']}%", flush=True)
+            print(f" Raw: Gas={raw_data['gas']}%", flush=True)
             
             # 2. Validate
             is_valid, error_msg = DataValidator.validate_sensor_data(raw_data)
@@ -153,6 +159,24 @@ async def generate_sensor_data():
             traceback.print_exc()
         
         await asyncio.sleep(2)
+
+@app.post("/force-emergency")
+async def force_emergency():
+    """Forces gas to 85% to trigger immediate permit block for demos"""
+    global current_gas
+    current_gas = 85.0
+    print("🚨 DEMO MODE: FORCED EMERGENCY GAS LEVEL TO 85%", flush=True)
+    return {"status": "Emergency Forced", "gas": current_gas}
+
+@app.post("/reset-sensors")
+async def reset_sensors():
+    """Resets all sensors back to safe baseline levels"""
+    global current_gas, current_pressure, current_temp
+    current_gas = 12.0
+    current_pressure = 1800.0
+    current_temp = 42.3
+    print("✅ DEMO MODE: SENSORS RESET TO NORMAL", flush=True)
+    return {"status": "Sensors Reset", "gas": current_gas}
 
 if __name__ == "__main__":
     import uvicorn
