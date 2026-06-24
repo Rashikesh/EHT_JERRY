@@ -92,29 +92,56 @@ export default function SensorDashboard() {
   const riskScore = calculateRiskScore()
   const riskColor = riskScore > 70 ? "red" : riskScore > 40 ? "yellow" : "green"
 
-  //  NEW: Function to simulate Plug-and-Play Provisioning
-  const provisionNewAsset = (name: string) => {
-    const newAsset: IoTAsset = {
-      id: `sensor-${Date.now()}`,
-      name: name,
-      lat: 28.6135 + Math.random() * 0.001, // Slight random offset
-      lng: 77.2085 + Math.random() * 0.001,
-      status: "learning", // Starts in Self-Harnessing phase
-      gasLevel: 0,
-      learnedThreshold: 0,
-    }
-    setAssets((prev) => [...prev, newAsset])
-
-    // Simulate AI Self-Harnessing (Learning Phase takes 5 seconds)
-    setTimeout(() => {
-      setAssets((prev) =>
-        prev.map((a) =>
-          a.id === newAsset.id
-            ? { ...a, status: "active", learnedThreshold: 40 }
-            : a,
-        ),
+  // 🆕 NEW: Function to provision new IoT asset (calls backend API)
+  const provisionNewAsset = async (
+    name: string,
+    protocol: string = "simulated",
+  ) => {
+    try {
+      const response = await fetch(
+        "http://localhost:8000/api/provision-asset",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: name,
+            protocol: protocol, // 'mqtt', 'modbus', or 'simulated'
+            lat: 28.6139 + (Math.random() * 0.002 - 0.001),
+            lng: 77.209 + (Math.random() * 0.002 - 0.001),
+          }),
+        },
       )
-    }, 5000)
+
+      const result = await response.json()
+      console.log("✅ Asset provisioned:", result)
+
+      // Add to local state immediately
+      setAssets((prev) => [...prev, result.asset])
+    } catch (error) {
+      console.error("❌ Failed to provision asset:", error)
+      // Fallback to local-only for demo
+      const fallbackAsset: IoTAsset = {
+        id: `sensor-${Date.now()}`,
+        name: name,
+        lat: 28.6139 + Math.random() * 0.001,
+        lng: 77.209 + Math.random() * 0.001,
+        status: "learning",
+        gasLevel: 0,
+        learnedThreshold: 0,
+      }
+      setAssets((prev) => [...prev, fallbackAsset])
+
+      // Simulate AI Self-Harnessing (Learning Phase takes 5 seconds)
+      setTimeout(() => {
+        setAssets((prev) =>
+          prev.map((a) =>
+            a.id === fallbackAsset.id
+              ? { ...a, status: "active", learnedThreshold: 40 }
+              : a,
+          ),
+        )
+      }, 5000)
+    }
   }
 
   useEffect(() => {
@@ -201,9 +228,9 @@ export default function SensorDashboard() {
               permitActive={data.permit_active}
               aiJustification={data.ai_justification}
               confidence={data.confidence}
-              gas={data.gas} // 👈 Added
-              pressure={data.pressure} // 👈 Added
-              temperature={data.temperature} // 👈 Added
+              gas={data.gas}
+              pressure={data.pressure}
+              temperature={data.temperature}
             />
           </div>
 
@@ -218,7 +245,7 @@ export default function SensorDashboard() {
                   onClick={() => setShowProvisionModal(true)}
                   className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg transition-all flex items-center gap-2"
                 >
-                  <span className="text-lg"></span> Provision New IoT Asset
+                  <span className="text-lg">➕</span> Provision New IoT Asset
                 </button>
               </div>
 
@@ -232,12 +259,12 @@ export default function SensorDashboard() {
           </div>
         </div>
 
-        {/* 🆕 NEW: Provisioning Modal */}
+        {/* 🆕 NEW: Provisioning Modal with Protocol Selection */}
         {showProvisionModal && (
           <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[1000] flex items-center justify-center p-4">
             <div className="bg-slate-900 border border-slate-700 rounded-2xl p-8 max-w-md w-full shadow-2xl">
               <h2 className="text-2xl font-bold text-white mb-2">
-                Provision New IoT Asset
+                🔌 Provision New IoT Asset
               </h2>
               <p className="text-slate-400 text-sm mb-6">
                 Connect a new MQTT/Modbus sensor to the Digital Twin. The AI
@@ -250,6 +277,46 @@ export default function SensorDashboard() {
                 className="w-full bg-slate-800 border border-slate-700 text-white p-3 rounded-lg mb-4 focus:outline-none focus:border-blue-500"
                 id="assetNameInput"
               />
+
+              {/* 🆕 Protocol Selector */}
+              <div className="mb-4">
+                <label className="text-xs text-slate-400 uppercase font-bold mb-2 block">
+                  Connection Protocol
+                </label>
+                <select
+                  id="protocolSelect"
+                  className="w-full bg-slate-800 border border-slate-700 text-white p-3 rounded-lg focus:outline-none focus:border-blue-500"
+                >
+                  <option value="simulated">🎮 Simulated (Demo Mode)</option>
+                  <option value="mqtt">📡 MQTT (IoT Sensors)</option>
+                  <option value="modbus">⚙️ Modbus TCP (PLC/SCADA)</option>
+                </select>
+              </div>
+
+              {/* 🆕 MQTT Topic Input */}
+              <div className="mb-4">
+                <label className="text-xs text-slate-400 uppercase font-bold mb-2 block">
+                  MQTT Topic (Optional)
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g., factory/zone-c/gas"
+                  className="w-full bg-slate-800 border border-slate-700 text-white p-3 rounded-lg focus:outline-none focus:border-blue-500"
+                  id="mqttTopicInput"
+                />
+              </div>
+
+              {/* 🧠 Self-Harnessing Info Box */}
+              <div className="bg-blue-900/20 border border-blue-500/30 rounded-lg p-3 mb-6">
+                <p className="text-blue-400 text-xs font-bold mb-1">
+                  🧠 Self-Harnessing AI
+                </p>
+                <p className="text-slate-400 text-xs">
+                  After connecting, the AI will observe 30 readings to establish
+                  a unique baseline and dynamic safety threshold for this
+                  sensor.
+                </p>
+              </div>
 
               <div className="flex justify-end gap-3">
                 <button
@@ -266,7 +333,12 @@ export default function SensorDashboard() {
                           "assetNameInput",
                         ) as HTMLInputElement
                       ).value || "New Sensor"
-                    provisionNewAsset(name)
+                    const protocol = (
+                      document.getElementById(
+                        "protocolSelect",
+                      ) as HTMLSelectElement
+                    ).value
+                    provisionNewAsset(name, protocol)
                     setShowProvisionModal(false)
                   }}
                   className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg"

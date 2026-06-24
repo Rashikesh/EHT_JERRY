@@ -1,59 +1,26 @@
+# backend/main.py
 import asyncio
 import random
-import sys
-from data_validator import DataValidator
-from anomaly_detector import AnomalyDetector
-from sensor_filter import SensorFilter
-from audit_logger import log_decision
+import json
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
-from contextlib import asynccontextmanager
+from typing import List
+
 from permit_agent import permit_agent
-
-# Initialize globally
-sensor_filter = SensorFilter(window_size=5)
-anomaly_detector = AnomalyDetector()
-
-# Global state for sensor simulation (Allows API to control them)
-current_gas = 12.0
-current_pressure = 1800.0
-current_temp = 42.3
-
-class ConnectionManager:
-    def __init__(self):
-        self.active_connections: list[WebSocket] = []
-
-    async def connect(self, websocket: WebSocket):
-        await websocket.accept()
-        self.active_connections.append(websocket)
-        print(f"✅ Client connected! Total: {len(self.active_connections)}", flush=True)
-
-    def disconnect(self, websocket: WebSocket):
-        if websocket in self.active_connections:
-            self.active_connections.remove(websocket)
-        print(f"❌ Client disconnected! Total: {len(self.active_connections)}", flush=True)
-
-    async def broadcast(self, message: dict):
-        dead_connections = []
-        for connection in self.active_connections:
-            try:
-                await connection.send_json(message)
-            except Exception as e:
-                print(f"⚠️ Send failed: {e}", flush=True)
-                dead_connections.append(connection)
-        for conn in dead_connections:
-            self.disconnect(conn)
-
-manager = ConnectionManager()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    task = asyncio.create_task(generate_sensor_data())
+    # Startup logic
+    asyncio.create_task(generate_sensor_data())
+    print("🚀 FastAPI Lifespan: Sensor simulator task started.", flush=True)
     yield
-    task.cancel()
+    # Shutdown logic (if needed)
+    print("🛑 FastAPI Lifespan: Shutting down...", flush=True)
+app = FastAPI(title="Industrial Safety Intelligence Agent", lifespan=lifespan)
 
-app = FastAPI(lifespan=lifespan)
 
+# CORS for Next.js frontend
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -62,33 +29,99 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Global state for sensor simulation
+current_gas = 12.0
+current_pressure = 1800.0
+current_temp = 42.3
+
+# WebSocket Connection Manager
+class ConnectionManager:
+    def __init__(self):
+        self.active_connections: List[WebSocket] = []
+
+    async def connect(self, websocket: WebSocket):
+        await websocket.accept()
+        self.active_connections.append(websocket)
+        print(f"✅ Client connected! Total: {len(self.active_connections)}")
+
+    def disconnect(self, websocket: WebSocket):
+        self.active_connections.remove(websocket)
+        print(f"❌ Client disconnected. Total: {len(self.active_connections)}")
+
+    async def broadcast(self, message: dict):
+        for connection in self.active_connections:
+            await connection.send_text(json.dumps(message))
+
+manager = ConnectionManager()
+
+# ============================================
+# 📡 REST API ENDPOINTS
+# ============================================
+
+@app.post("/force-emergency")
+async def force_emergency():
+    global current_gas
+    current_gas = 85.0
+    print("🚨 DEMO MODE: FORCED EMERGENCY GAS LEVEL TO 85%", flush=True)
+    return {"status": "Emergency Forced", "gas": current_gas}
+
+@app.post("/reset-sensors")
+async def reset_sensors():
+    global current_gas, current_pressure, current_temp
+    current_gas = 12.0
+    current_pressure = 1800.0
+    current_temp = 42.3
+    print("✅ DEMO MODE: SENSORS RESET TO NORMAL", flush=True)
+    return {"status": "Sensors Reset"}
+
+@app.get("/permit-status")
+async def get_permit_status():
+    sensor_data = {"gas": current_gas, "pressure": current_pressure, "temperature": current_temp}
+    decision = permit_agent.evaluate(sensor_data)
+    return {**sensor_data, **decision}
+
+@app.post("/provision-asset")
+async def provision_asset(request: dict):
+    name = request.get("name", "Unnamed Sensor")
+    protocol = request.get("protocol", "simulated")
+    print(f"🔌 [Provision] New asset added: {name} ({protocol})", flush=True)
+    return {
+        "status": "provisioned", 
+        "asset": {
+            "id": f"sensor-{random.randint(1000, 9999)}",
+            "name": name,
+            "protocol": protocol,
+            "status": "learning",
+            "lat": request.get("lat", 28.6139),
+            "lng": request.get("lng", 77.2090)
+        }
+    }
+
+# ============================================
+# 🔌 WEBSOCKET ENDPOINT
+# ============================================
+
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     await manager.connect(websocket)
     try:
         while True:
+            # Keep connection alive
             await websocket.receive_text()
     except WebSocketDisconnect:
         manager.disconnect(websocket)
-    except Exception as e:
-        print(f"WebSocket error: {e}", flush=True)
-        manager.disconnect(websocket)
+
+# ============================================
+# 🎮 BACKGROUND SENSOR SIMULATOR
+# ============================================
 
 async def generate_sensor_data():
-    global current_gas, current_pressure, current_temp # 👈 ADD THIS
-    print("🔥 GENERATE_SENSOR_DATA STARTED!", flush=True)
+    global current_gas, current_pressure, current_temp
+    print("🎮 Mock sensor simulator started successfully!", flush=True)
     
-    # Remove the local gas = 12.0, pressure = 1800.0, temp = 42.3 lines here!
-    
-    print("🎮 Mock sensor simulator started!", flush=True)
-    
-    counter = 0
     while True:
         try:
-            counter += 1
-            print(f"\n🔄 --- ITERATION {counter} ---", flush=True)
-            
-            # 2. Use the GLOBAL variables (current_gas, NOT gas)
+            # Simulate realistic sensor drift
             current_gas += random.uniform(-0.5, 1.8)
             current_gas = max(0.0, min(100.0, current_gas))
             
@@ -98,86 +131,212 @@ async def generate_sensor_data():
             current_temp += random.uniform(-0.3, 0.4)
             current_temp = max(30.0, min(80.0, current_temp))
             
-            raw_data = {
+            sensor_data = {
                 "gas": round(current_gas, 1),
                 "pressure": round(current_pressure, 0),
                 "temperature": round(current_temp, 1),
                 "shift": 0
             }
-            print(f" Raw: Gas={raw_data['gas']}%", flush=True)
             
-            # 2. Validate
-            is_valid, error_msg = DataValidator.validate_sensor_data(raw_data)
-            if not is_valid:
-                print(f"️ REJECTED: {error_msg}", flush=True)
-                await asyncio.sleep(2)
-                continue
+            # 🧠 Evaluate permit using the AI Agent (which calls RAG if blocked)
+            decision = permit_agent.evaluate(sensor_data)
             
-            # 3. Filter
-            filtered = sensor_filter.filter_reading(
-                raw_data['gas'], raw_data['pressure'], raw_data['temperature']
-            )
-            
-            # 4. Anomaly check
-            is_anomaly, mean, std = anomaly_detector.check_anomaly(filtered['gas_smooth'])
-            if is_anomaly:
-                print(f"️ ANOMALY: Gas={filtered['gas_smooth']:.1f}%", flush=True)
-            
-            # 5. Build sensor data (ONCE)
-            sensor_data = {
-                "gas": round(filtered['gas_smooth'], 1),
-                "pressure": round(filtered['pressure_smooth'], 0),
-                "temperature": round(filtered['temp_smooth'], 1),
-                "shift": 0,
-                "anomaly_detected": is_anomaly
-            }
-            print(f"📈 Smoothed: Gas={sensor_data['gas']}%", flush=True)
-            
-            # 6. AI Decision
-            print("🤖 Evaluating conditions...", flush=True)
-            agent_decision = permit_agent.evaluate_conditions(sensor_data)
-            
-            # 7. Log
-            log_decision(sensor_data, agent_decision)
-            
-            # 8. Build payload
-            broadcast_payload = {**sensor_data, **agent_decision}
-            print(f"📦 Payload keys: {list(broadcast_payload.keys())}", flush=True)
-            
-            # 9. Broadcast
-            print(f" Broadcasting to {len(manager.active_connections)} clients", flush=True)
+            # Broadcast enriched data to all connected clients
+            broadcast_payload = {**sensor_data, **decision}
             await manager.broadcast(broadcast_payload)
             
-            if not agent_decision["permit_active"]:
-                print(f"🚨 PERMIT BLOCKED!", flush=True)
-            
-            print(f"✅ Iteration {counter} complete", flush=True)
-            
         except Exception as e:
-            print(f"💥 ERROR IN LOOP: {e}", flush=True)
-            import traceback
-            traceback.print_exc()
-        
-        await asyncio.sleep(2)
-
-@app.post("/force-emergency")
-async def force_emergency():
-    """Forces gas to 85% to trigger immediate permit block for demos"""
-    global current_gas
-    current_gas = 85.0
-    print("🚨 DEMO MODE: FORCED EMERGENCY GAS LEVEL TO 85%", flush=True)
-    return {"status": "Emergency Forced", "gas": current_gas}
-
-@app.post("/reset-sensors")
-async def reset_sensors():
-    """Resets all sensors back to safe baseline levels"""
-    global current_gas, current_pressure, current_temp
-    current_gas = 12.0
-    current_pressure = 1800.0
-    current_temp = 42.3
-    print("✅ DEMO MODE: SENSORS RESET TO NORMAL", flush=True)
-    return {"status": "Sensors Reset", "gas": current_gas}
+            print(f"💥 Error in simulator loop: {e}", flush=True)
+            
+        await asyncio.sleep(2) # Broadcast every 2 seconds
 
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
+
+
+
+
+# import asyncio
+# import random
+# import sys
+# from data_validator import DataValidator
+# from anomaly_detector import AnomalyDetector
+# from sensor_filter import SensorFilter
+# from audit_logger import log_decision
+# from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+# from fastapi.middleware.cors import CORSMiddleware
+# from contextlib import asynccontextmanager
+# from permit_agent import permit_agent
+
+# # Initialize globally
+# sensor_filter = SensorFilter(window_size=5)
+# anomaly_detector = AnomalyDetector()
+
+# # Global state for sensor simulation (Allows API to control them)
+# current_gas = 12.0
+# current_pressure = 1800.0
+# current_temp = 42.3
+
+# class ConnectionManager:
+#     def __init__(self):
+#         self.active_connections: list[WebSocket] = []
+
+#     async def connect(self, websocket: WebSocket):
+#         await websocket.accept()
+#         self.active_connections.append(websocket)
+#         print(f"✅ Client connected! Total: {len(self.active_connections)}", flush=True)
+
+#     def disconnect(self, websocket: WebSocket):
+#         if websocket in self.active_connections:
+#             self.active_connections.remove(websocket)
+#         print(f"❌ Client disconnected! Total: {len(self.active_connections)}", flush=True)
+
+#     async def broadcast(self, message: dict):
+#         dead_connections = []
+#         for connection in self.active_connections:
+#             try:
+#                 await connection.send_json(message)
+#             except Exception as e:
+#                 print(f"⚠️ Send failed: {e}", flush=True)
+#                 dead_connections.append(connection)
+#         for conn in dead_connections:
+#             self.disconnect(conn)
+
+# manager = ConnectionManager()
+
+# @asynccontextmanager
+# async def lifespan(app: FastAPI):
+#     task = asyncio.create_task(generate_sensor_data())
+#     yield
+#     task.cancel()
+
+# app = FastAPI(lifespan=lifespan)
+
+# app.add_middleware(
+#     CORSMiddleware,
+#     allow_origins=["*"],
+#     allow_credentials=True,
+#     allow_methods=["*"],
+#     allow_headers=["*"],
+# )
+
+# @app.websocket("/ws")
+# async def websocket_endpoint(websocket: WebSocket):
+#     await manager.connect(websocket)
+#     try:
+#         while True:
+#             await websocket.receive_text()
+#     except WebSocketDisconnect:
+#         manager.disconnect(websocket)
+#     except Exception as e:
+#         print(f"WebSocket error: {e}", flush=True)
+#         manager.disconnect(websocket)
+
+# async def generate_sensor_data():
+#     global current_gas, current_pressure, current_temp # 👈 ADD THIS
+#     print("🔥 GENERATE_SENSOR_DATA STARTED!", flush=True)
+    
+#     # Remove the local gas = 12.0, pressure = 1800.0, temp = 42.3 lines here!
+    
+#     print("🎮 Mock sensor simulator started!", flush=True)
+    
+#     counter = 0
+#     while True:
+#         try:
+#             counter += 1
+#             print(f"\n🔄 --- ITERATION {counter} ---", flush=True)
+            
+#             # 2. Use the GLOBAL variables (current_gas, NOT gas)
+#             current_gas += random.uniform(-0.5, 1.8)
+#             current_gas = max(0.0, min(100.0, current_gas))
+            
+#             current_pressure += random.uniform(-15, 15)
+#             current_pressure = max(1600.0, min(2800.0, current_pressure))
+            
+#             current_temp += random.uniform(-0.3, 0.4)
+#             current_temp = max(30.0, min(80.0, current_temp))
+            
+#             raw_data = {
+#                 "gas": round(current_gas, 1),
+#                 "pressure": round(current_pressure, 0),
+#                 "temperature": round(current_temp, 1),
+#                 "shift": 0
+#             }
+#             print(f" Raw: Gas={raw_data['gas']}%", flush=True)
+            
+#             # 2. Validate
+#             is_valid, error_msg = DataValidator.validate_sensor_data(raw_data)
+#             if not is_valid:
+#                 print(f"️ REJECTED: {error_msg}", flush=True)
+#                 await asyncio.sleep(2)
+#                 continue
+            
+#             # 3. Filter
+#             filtered = sensor_filter.filter_reading(
+#                 raw_data['gas'], raw_data['pressure'], raw_data['temperature']
+#             )
+            
+#             # 4. Anomaly check
+#             is_anomaly, mean, std = anomaly_detector.check_anomaly(filtered['gas_smooth'])
+#             if is_anomaly:
+#                 print(f"️ ANOMALY: Gas={filtered['gas_smooth']:.1f}%", flush=True)
+            
+#             # 5. Build sensor data (ONCE)
+#             sensor_data = {
+#                 "gas": round(filtered['gas_smooth'], 1),
+#                 "pressure": round(filtered['pressure_smooth'], 0),
+#                 "temperature": round(filtered['temp_smooth'], 1),
+#                 "shift": 0,
+#                 "anomaly_detected": is_anomaly
+#             }
+#             print(f"📈 Smoothed: Gas={sensor_data['gas']}%", flush=True)
+            
+#             # 6. AI Decision
+#             print("🤖 Evaluating conditions...", flush=True)
+#             agent_decision = permit_agent.evaluate_conditions(sensor_data)
+            
+#             # 7. Log
+#             log_decision(sensor_data, agent_decision)
+            
+#             # 8. Build payload
+#             broadcast_payload = {**sensor_data, **agent_decision}
+#             print(f"📦 Payload keys: {list(broadcast_payload.keys())}", flush=True)
+            
+#             # 9. Broadcast
+#             print(f" Broadcasting to {len(manager.active_connections)} clients", flush=True)
+#             await manager.broadcast(broadcast_payload)
+            
+#             if not agent_decision["permit_active"]:
+#                 print(f"🚨 PERMIT BLOCKED!", flush=True)
+            
+#             print(f"✅ Iteration {counter} complete", flush=True)
+            
+#         except Exception as e:
+#             print(f"💥 ERROR IN LOOP: {e}", flush=True)
+#             import traceback
+#             traceback.print_exc()
+        
+#         await asyncio.sleep(2)
+
+# @app.post("/force-emergency")
+# async def force_emergency():
+#     """Forces gas to 85% to trigger immediate permit block for demos"""
+#     global current_gas
+#     current_gas = 85.0
+#     print("🚨 DEMO MODE: FORCED EMERGENCY GAS LEVEL TO 85%", flush=True)
+#     return {"status": "Emergency Forced", "gas": current_gas}
+
+# @app.post("/reset-sensors")
+# async def reset_sensors():
+#     """Resets all sensors back to safe baseline levels"""
+#     global current_gas, current_pressure, current_temp
+#     current_gas = 12.0
+#     current_pressure = 1800.0
+#     current_temp = 42.3
+#     print("✅ DEMO MODE: SENSORS RESET TO NORMAL", flush=True)
+#     return {"status": "Sensors Reset", "gas": current_gas}
+
+# if __name__ == "__main__":
+#     import uvicorn
+#     uvicorn.run(app, host="0.0.0.0", port=8000)
