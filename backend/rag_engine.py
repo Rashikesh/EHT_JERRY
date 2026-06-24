@@ -1,47 +1,67 @@
 # backend/rag_engine.py
-"""
-RAG Engine: Uses LangChain and FAISS to retrieve historical incident reports 
-based on live sensor telemetry.
-"""
+import os
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
-# 👇 FIXED: Changed from langchain.schema to langchain_core.documents
-from langchain_core.documents import Document 
+from langchain_core.documents import Document
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 class RAGEngine:
     def __init__(self):
         print("🧠 Initializing Lightweight RAG Engine (CPU)...")
         
-        # Load the lightweight embedding model (Runs on CPU, no GPU needed)
+        # Load the lightweight embedding model
         model_name = "sentence-transformers/all-MiniLM-L6-v2"
         self.embeddings = HuggingFaceEmbeddings(model_name=model_name)
         
-        # 📚 Historical Incident Database (Simulated Vector Store)
-        self.incidents = [
-            Document(page_content="Incident 2021-04: High gas levels (45%) in Zone B led to a minor flash fire. Root cause: faulty pressure relief valve. Action: Evacuate zone, close main isolation valve.", metadata={"gas": 45, "pressure": 1800}),
-            Document(page_content="Incident 2019-08: Thermal runaway detected when temperature exceeded 65°C and pressure spiked to 2500 bar. Result: Chemical vat rupture. Action: Activate emergency cooling, vent pressure.", metadata={"temp": 68, "pressure": 2500}),
-            Document(page_content="Incident 2022-11: Gas leak at 38% combined with high vibration. Cause: Pipeline corrosion. Action: Halt hot work, deploy gas suppression foam.", metadata={"gas": 38}),
-            Document(page_content="Incident 2020-02: Pressure drop followed by gas spike. Cause: Water ingress into gas line. Action: Drain line, check moisture traps.", metadata={"pressure": 1500, "gas": 42}),
-            Document(page_content="Standard Operating Procedure (SOP): If gas > 40%, immediately revoke all hot-work permits and sound facility alarm.", metadata={"type": "SOP"}),
-            Document(page_content="Incident 2018-05: Confined space entry halted due to O2 deficiency (<19.5%). Action: Deploy ventilation fans before re-entry.", metadata={"o2": 18.0}),
-        ]
+        pdf_path = "osha_h2s.pdf"
         
-        print("📚 Indexing historical incidents into FAISS...")
-        # Create the FAISS vector store
-        self.vectorstore = FAISS.from_documents(self.incidents, self.embeddings)
-        self.retriever = self.vectorstore.as_retriever(search_kwargs={"k": 2}) # Retrieve top 2 most relevant incidents
+        if os.path.exists(pdf_path):
+            print(f"📄 Loading real safety document: {pdf_path}...")
+            try:
+                from pypdf import PdfReader # pypdf is the modern version of PyPDF2
+                reader = PdfReader(pdf_path)
+                text = ""
+                for page in reader.pages:
+                    text += page.extract_text() + "\n"
+                
+                # Chunk the text
+                text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
+                chunks = text_splitter.split_text(text)
+                
+                # Create Documents
+                docs = [Document(page_content=chunk) for chunk in chunks[:50]] # Limit to first 50 chunks to save RAM/time
+                
+                print(f"📚 Indexing {len(docs)} chunks into FAISS...")
+                self.vectorstore = FAISS.from_documents(docs, self.embeddings)
+                
+            except Exception as e:
+                print(f"⚠️ Error parsing PDF: {e}. Falling back to hardcoded data.")
+                self._load_fallback_data()
+        else:
+            print(f"⚠️ PDF not found at {pdf_path}. Falling back to hardcoded data.")
+            self._load_fallback_data()
+
+        self.retriever = self.vectorstore.as_retriever(search_kwargs={"k": 2})
         print("✅ RAG Engine ready. Historical incidents indexed.")
 
+    def _load_fallback_data(self):
+        """Fallback if PDF fails to load"""
+        incidents = [
+            Document(page_content="Incident 2021-04: High gas levels (45%) in Zone B led to a minor flash fire. Action: Evacuate zone, close main isolation valve."),
+            Document(page_content="Standard Operating Procedure (SOP): If gas > 40%, immediately revoke all hot-work permits and sound facility alarm."),
+        ]
+        self.vectorstore = FAISS.from_documents(incidents, self.embeddings)
+
     def get_context(self, query: str) -> str:
-        """Searches the vector database for relevant incidents based on the query."""
         docs = self.retriever.invoke(query)
         if not docs:
             return "No historical incidents found matching current conditions."
         
-        context = "\n📜 HISTORICAL INCIDENTS & PROTOCOLS:\n"
+        context = "\n📜 RETRIEVED FROM OSHA SAFETY MANUAL:\n"
         for i, doc in enumerate(docs, 1):
-            context += f"  {i}. {doc.page_content}\n"
+            # Truncate long chunks for the UI
+            content = doc.page_content[:200] + "..." if len(doc.page_content) > 200 else doc.page_content
+            context += f"  {i}. {content}\n"
         return context
 
-# Global instance
 rag_engine = RAGEngine()

@@ -1,26 +1,79 @@
 # backend/main.py
 import asyncio
-import random
 import json
-from contextlib import asynccontextmanager
+import time
+import datetime
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
+from contextlib import asynccontextmanager
 from typing import List
+from io import BytesIO
+import paho.mqtt.client as mqtt
 
 from permit_agent import permit_agent
 
+# Global state
+current_gas = 12.0
+current_pressure = 1800.0
+current_temp = 42.3
+is_permit_active = True
+
+# MQTT Client Setup
+mqtt_client = mqtt.Client()
+
+def on_mqtt_message(client, userdata, msg):
+    global current_gas, current_pressure, current_temp
+    try:
+        payload = json.loads(msg.payload.decode())
+        value = payload.get("value", 0)
+        
+        if "gas" in msg.topic: current_gas = float(value)
+        elif "pressure" in msg.topic: current_pressure = float(value)
+        elif "temp" in msg.topic: current_temp = float(value)
+    except Exception as e:
+        print(f"MQTT Parse Error: {e}")
+
+mqtt_client.on_message = on_mqtt_message
+
+class ConnectionManager:
+    def __init__(self):
+        self.active_connections: List[WebSocket] = []
+
+    async def connect(self, websocket: WebSocket):
+        await websocket.accept()
+        self.active_connections.append(websocket)
+
+    def disconnect(self, websocket: WebSocket):
+        if websocket in self.active_connections:
+            self.active_connections.remove(websocket)
+
+    async def broadcast(self, message: dict):
+        for connection in self.active_connections:
+            try: await connection.send_text(json.dumps(message))
+            except: pass
+
+manager = ConnectionManager()
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup logic
-    asyncio.create_task(generate_sensor_data())
-    print("🚀 FastAPI Lifespan: Sensor simulator task started.", flush=True)
+    try:
+        mqtt_client.connect("localhost", 1883, 60)
+        mqtt_client.subscribe("factory/zone-a/gas")
+        mqtt_client.subscribe("factory/zone-a/pressure")
+        mqtt_client.subscribe("factory/zone-a/temp")
+        mqtt_client.loop_start()
+        print("📡 MQTT Client connected and subscribed to factory/zone-a/#", flush=True)
+    except Exception as e:
+        print(f"❌ MQTT Connection failed: {e}. Make sure broker.py is running!", flush=True)
+    
+    asyncio.create_task(broadcast_loop())
     yield
-    # Shutdown logic (if needed)
-    print("🛑 FastAPI Lifespan: Shutting down...", flush=True)
+    mqtt_client.loop_stop()
+    mqtt_client.disconnect()
+
 app = FastAPI(title="Industrial Safety Intelligence Agent", lifespan=lifespan)
 
-
-# CORS for Next.js frontend
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -29,30 +82,29 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Global state for sensor simulation
-current_gas = 12.0
-current_pressure = 1800.0
-current_temp = 42.3
-
-# WebSocket Connection Manager
-class ConnectionManager:
-    def __init__(self):
-        self.active_connections: List[WebSocket] = []
-
-    async def connect(self, websocket: WebSocket):
-        await websocket.accept()
-        self.active_connections.append(websocket)
-        print(f"✅ Client connected! Total: {len(self.active_connections)}")
-
-    def disconnect(self, websocket: WebSocket):
-        self.active_connections.remove(websocket)
-        print(f"❌ Client disconnected. Total: {len(self.active_connections)}")
-
-    async def broadcast(self, message: dict):
-        for connection in self.active_connections:
-            await connection.send_text(json.dumps(message))
-
-manager = ConnectionManager()
+async def broadcast_loop():
+    global is_permit_active
+    while True:
+        sensor_data = {
+            "gas": round(current_gas, 1),
+            "pressure": round(current_pressure, 1),
+            "temperature": round(current_temp, 1),
+            "shift": 0
+        }
+        
+        decision = permit_agent.evaluate(sensor_data)
+        
+        # Closed-Loop Interlock
+        if not decision["permit_active"] and is_permit_active:
+            cmd = {"action": "CLOSE", "reason": decision["blocked_reason"], "ts": time.time()}
+            mqtt_client.publish("factory/valve-1/command", json.dumps(cmd))
+            print(f"🚨 CLOSED-LOOP: Sent VALVE CLOSE command via MQTT!", flush=True)
+            
+        is_permit_active = decision["permit_active"]
+        
+        broadcast_payload = {**sensor_data, **decision}
+        await manager.broadcast(broadcast_payload)
+        await asyncio.sleep(2)
 
 # ============================================
 # 📡 REST API ENDPOINTS
@@ -60,19 +112,15 @@ manager = ConnectionManager()
 
 @app.post("/force-emergency")
 async def force_emergency():
-    global current_gas
-    current_gas = 85.0
-    print("🚨 DEMO MODE: FORCED EMERGENCY GAS LEVEL TO 85%", flush=True)
-    return {"status": "Emergency Forced", "gas": current_gas}
+    mqtt_client.publish("factory/simulate/emergency", json.dumps({"action": "start"}))
+    print("🚨 DEMO MODE: Published Emergency Command to MQTT", flush=True)
+    return {"status": "Emergency Triggered via MQTT"}
 
 @app.post("/reset-sensors")
 async def reset_sensors():
-    global current_gas, current_pressure, current_temp
-    current_gas = 12.0
-    current_pressure = 1800.0
-    current_temp = 42.3
-    print("✅ DEMO MODE: SENSORS RESET TO NORMAL", flush=True)
-    return {"status": "Sensors Reset"}
+    mqtt_client.publish("factory/simulate/reset", json.dumps({"action": "stop"}))
+    print("✅ DEMO MODE: Published Reset Command to MQTT", flush=True)
+    return {"status": "Reset Triggered via MQTT"}
 
 @app.get("/permit-status")
 async def get_permit_status():
@@ -88,14 +136,69 @@ async def provision_asset(request: dict):
     return {
         "status": "provisioned", 
         "asset": {
-            "id": f"sensor-{random.randint(1000, 9999)}",
-            "name": name,
-            "protocol": protocol,
-            "status": "learning",
-            "lat": request.get("lat", 28.6139),
-            "lng": request.get("lng", 77.2090)
+            "id": f"sensor-{int(time.time())}",
+            "name": name, "protocol": protocol, "status": "learning",
+            "lat": request.get("lat", 28.6139), "lng": request.get("lng", 77.2090)
         }
     }
+
+# ============================================
+# 📄 PDF COMPLIANCE REPORT ENDPOINT
+# ============================================
+
+@app.get("/download-report")
+async def download_report():
+    from reportlab.lib.pagesizes import letter
+    from reportlab.pdfgen import canvas
+    
+    buffer = BytesIO()
+    p = canvas.Canvas(buffer, pagesize=letter)
+    
+    # PDF Header
+    p.setFont("Helvetica-Bold", 20)
+    p.drawString(72, 750, "Industrial Safety Compliance Report")
+    
+    p.setFont("Helvetica", 12)
+    p.drawString(72, 720, f"Generated: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    p.drawString(72, 700, "Facility: Zone B - Main Valve Assembly")
+    
+    # Incident Details
+    p.setFont("Helvetica-Bold", 14)
+    p.drawString(72, 650, "Incident Summary:")
+    p.setFont("Helvetica", 12)
+    p.drawString(72, 630, f"Gas Level: {current_gas}% (Threshold: 40%)")
+    p.drawString(72, 610, f"Pressure: {current_pressure} bar (Threshold: 2400)")
+    p.drawString(72, 590, f"Temperature: {current_temp}°C (Threshold: 65)")
+    
+    # AI Action
+    p.setFont("Helvetica-Bold", 14)
+    p.drawString(72, 540, "AI Automated Actions:")
+    p.setFont("Helvetica", 12)
+    p.drawString(72, 520, "1. Digital Permit automatically BLOCKED.")
+    p.drawString(72, 500, "2. MQTT Command sent to close isolation valve.")
+    p.drawString(72, 480, "3. RAG Engine retrieved OSHA 3151 protocols.")
+    
+    # OSHA Reference
+    p.setFont("Helvetica-Bold", 14)
+    p.drawString(72, 430, "Regulatory Reference (OSHA 3151):")
+    p.setFont("Helvetica", 10)
+    p.drawString(72, 410, "In the event of H2S or combustible gas exceeding 40% LEL,")
+    p.drawString(72, 395, "all hot work must cease immediately. Personnel must evacuate")
+    p.drawString(72, 380, "upwind and don SCBA if gas levels exceed IDLH limits.")
+    
+    # Footer
+    p.setFont("Helvetica-Oblique", 10)
+    p.drawString(72, 50, "Auto-generated by Industrial Safety Intelligence Agent v1.0")
+    
+    p.showPage()
+    p.save()
+    
+    buffer.seek(0)
+    return StreamingResponse(
+        buffer, 
+        media_type="application/pdf", 
+        headers={"Content-Disposition": "attachment; filename=OSHA_Compliance_Report.pdf"}
+    )
 
 # ============================================
 # 🔌 WEBSOCKET ENDPOINT
@@ -105,238 +208,10 @@ async def provision_asset(request: dict):
 async def websocket_endpoint(websocket: WebSocket):
     await manager.connect(websocket)
     try:
-        while True:
-            # Keep connection alive
-            await websocket.receive_text()
+        while True: await websocket.receive_text()
     except WebSocketDisconnect:
         manager.disconnect(websocket)
-
-# ============================================
-# 🎮 BACKGROUND SENSOR SIMULATOR
-# ============================================
-
-async def generate_sensor_data():
-    global current_gas, current_pressure, current_temp
-    print("🎮 Mock sensor simulator started successfully!", flush=True)
-    
-    while True:
-        try:
-            # Simulate realistic sensor drift
-            current_gas += random.uniform(-0.5, 1.8)
-            current_gas = max(0.0, min(100.0, current_gas))
-            
-            current_pressure += random.uniform(-15, 15)
-            current_pressure = max(1600.0, min(2800.0, current_pressure))
-            
-            current_temp += random.uniform(-0.3, 0.4)
-            current_temp = max(30.0, min(80.0, current_temp))
-            
-            sensor_data = {
-                "gas": round(current_gas, 1),
-                "pressure": round(current_pressure, 0),
-                "temperature": round(current_temp, 1),
-                "shift": 0
-            }
-            
-            # 🧠 Evaluate permit using the AI Agent (which calls RAG if blocked)
-            decision = permit_agent.evaluate(sensor_data)
-            
-            # Broadcast enriched data to all connected clients
-            broadcast_payload = {**sensor_data, **decision}
-            await manager.broadcast(broadcast_payload)
-            
-        except Exception as e:
-            print(f"💥 Error in simulator loop: {e}", flush=True)
-            
-        await asyncio.sleep(2) # Broadcast every 2 seconds
 
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
-
-
-
-
-# import asyncio
-# import random
-# import sys
-# from data_validator import DataValidator
-# from anomaly_detector import AnomalyDetector
-# from sensor_filter import SensorFilter
-# from audit_logger import log_decision
-# from fastapi import FastAPI, WebSocket, WebSocketDisconnect
-# from fastapi.middleware.cors import CORSMiddleware
-# from contextlib import asynccontextmanager
-# from permit_agent import permit_agent
-
-# # Initialize globally
-# sensor_filter = SensorFilter(window_size=5)
-# anomaly_detector = AnomalyDetector()
-
-# # Global state for sensor simulation (Allows API to control them)
-# current_gas = 12.0
-# current_pressure = 1800.0
-# current_temp = 42.3
-
-# class ConnectionManager:
-#     def __init__(self):
-#         self.active_connections: list[WebSocket] = []
-
-#     async def connect(self, websocket: WebSocket):
-#         await websocket.accept()
-#         self.active_connections.append(websocket)
-#         print(f"✅ Client connected! Total: {len(self.active_connections)}", flush=True)
-
-#     def disconnect(self, websocket: WebSocket):
-#         if websocket in self.active_connections:
-#             self.active_connections.remove(websocket)
-#         print(f"❌ Client disconnected! Total: {len(self.active_connections)}", flush=True)
-
-#     async def broadcast(self, message: dict):
-#         dead_connections = []
-#         for connection in self.active_connections:
-#             try:
-#                 await connection.send_json(message)
-#             except Exception as e:
-#                 print(f"⚠️ Send failed: {e}", flush=True)
-#                 dead_connections.append(connection)
-#         for conn in dead_connections:
-#             self.disconnect(conn)
-
-# manager = ConnectionManager()
-
-# @asynccontextmanager
-# async def lifespan(app: FastAPI):
-#     task = asyncio.create_task(generate_sensor_data())
-#     yield
-#     task.cancel()
-
-# app = FastAPI(lifespan=lifespan)
-
-# app.add_middleware(
-#     CORSMiddleware,
-#     allow_origins=["*"],
-#     allow_credentials=True,
-#     allow_methods=["*"],
-#     allow_headers=["*"],
-# )
-
-# @app.websocket("/ws")
-# async def websocket_endpoint(websocket: WebSocket):
-#     await manager.connect(websocket)
-#     try:
-#         while True:
-#             await websocket.receive_text()
-#     except WebSocketDisconnect:
-#         manager.disconnect(websocket)
-#     except Exception as e:
-#         print(f"WebSocket error: {e}", flush=True)
-#         manager.disconnect(websocket)
-
-# async def generate_sensor_data():
-#     global current_gas, current_pressure, current_temp # 👈 ADD THIS
-#     print("🔥 GENERATE_SENSOR_DATA STARTED!", flush=True)
-    
-#     # Remove the local gas = 12.0, pressure = 1800.0, temp = 42.3 lines here!
-    
-#     print("🎮 Mock sensor simulator started!", flush=True)
-    
-#     counter = 0
-#     while True:
-#         try:
-#             counter += 1
-#             print(f"\n🔄 --- ITERATION {counter} ---", flush=True)
-            
-#             # 2. Use the GLOBAL variables (current_gas, NOT gas)
-#             current_gas += random.uniform(-0.5, 1.8)
-#             current_gas = max(0.0, min(100.0, current_gas))
-            
-#             current_pressure += random.uniform(-15, 15)
-#             current_pressure = max(1600.0, min(2800.0, current_pressure))
-            
-#             current_temp += random.uniform(-0.3, 0.4)
-#             current_temp = max(30.0, min(80.0, current_temp))
-            
-#             raw_data = {
-#                 "gas": round(current_gas, 1),
-#                 "pressure": round(current_pressure, 0),
-#                 "temperature": round(current_temp, 1),
-#                 "shift": 0
-#             }
-#             print(f" Raw: Gas={raw_data['gas']}%", flush=True)
-            
-#             # 2. Validate
-#             is_valid, error_msg = DataValidator.validate_sensor_data(raw_data)
-#             if not is_valid:
-#                 print(f"️ REJECTED: {error_msg}", flush=True)
-#                 await asyncio.sleep(2)
-#                 continue
-            
-#             # 3. Filter
-#             filtered = sensor_filter.filter_reading(
-#                 raw_data['gas'], raw_data['pressure'], raw_data['temperature']
-#             )
-            
-#             # 4. Anomaly check
-#             is_anomaly, mean, std = anomaly_detector.check_anomaly(filtered['gas_smooth'])
-#             if is_anomaly:
-#                 print(f"️ ANOMALY: Gas={filtered['gas_smooth']:.1f}%", flush=True)
-            
-#             # 5. Build sensor data (ONCE)
-#             sensor_data = {
-#                 "gas": round(filtered['gas_smooth'], 1),
-#                 "pressure": round(filtered['pressure_smooth'], 0),
-#                 "temperature": round(filtered['temp_smooth'], 1),
-#                 "shift": 0,
-#                 "anomaly_detected": is_anomaly
-#             }
-#             print(f"📈 Smoothed: Gas={sensor_data['gas']}%", flush=True)
-            
-#             # 6. AI Decision
-#             print("🤖 Evaluating conditions...", flush=True)
-#             agent_decision = permit_agent.evaluate_conditions(sensor_data)
-            
-#             # 7. Log
-#             log_decision(sensor_data, agent_decision)
-            
-#             # 8. Build payload
-#             broadcast_payload = {**sensor_data, **agent_decision}
-#             print(f"📦 Payload keys: {list(broadcast_payload.keys())}", flush=True)
-            
-#             # 9. Broadcast
-#             print(f" Broadcasting to {len(manager.active_connections)} clients", flush=True)
-#             await manager.broadcast(broadcast_payload)
-            
-#             if not agent_decision["permit_active"]:
-#                 print(f"🚨 PERMIT BLOCKED!", flush=True)
-            
-#             print(f"✅ Iteration {counter} complete", flush=True)
-            
-#         except Exception as e:
-#             print(f"💥 ERROR IN LOOP: {e}", flush=True)
-#             import traceback
-#             traceback.print_exc()
-        
-#         await asyncio.sleep(2)
-
-# @app.post("/force-emergency")
-# async def force_emergency():
-#     """Forces gas to 85% to trigger immediate permit block for demos"""
-#     global current_gas
-#     current_gas = 85.0
-#     print("🚨 DEMO MODE: FORCED EMERGENCY GAS LEVEL TO 85%", flush=True)
-#     return {"status": "Emergency Forced", "gas": current_gas}
-
-# @app.post("/reset-sensors")
-# async def reset_sensors():
-#     """Resets all sensors back to safe baseline levels"""
-#     global current_gas, current_pressure, current_temp
-#     current_gas = 12.0
-#     current_pressure = 1800.0
-#     current_temp = 42.3
-#     print("✅ DEMO MODE: SENSORS RESET TO NORMAL", flush=True)
-#     return {"status": "Sensors Reset", "gas": current_gas}
-
-# if __name__ == "__main__":
-#     import uvicorn
-#     uvicorn.run(app, host="0.0.0.0", port=8000)
