@@ -68,6 +68,16 @@ html, body {
   box-shadow: 0 12px 40px rgba(59, 130, 246, 0.15);
 }
 
+/* Golden Ratio Smooth Transitions */
+.glass-card, .alert-box, .resizable-container {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Maintain aspect ratios */
+.golden-ratio-container {
+  aspect-ratio: 1.618 / 1;
+}
+
 /* Stat Box Specific Constraints */
 .stat-box {
   min-height: 140px;
@@ -335,6 +345,13 @@ html, body {
   animation: glow-red 2s ease-in-out infinite;
 }
 
+/* Responsive grid with golden proportions */
+@supports (grid-template-columns: clamp(200px, 1fr, 400px)) {
+  .sensor-grid {
+    grid-template-columns: repeat(auto-fit, minmax(clamp(200px, 25vw, 400px), 1fr));
+  }
+}
+
 @keyframes glow-green {
   0%, 100% { box-shadow: 0 0 20px rgba(34, 197, 94, 0.2); }
   50% { box-shadow: 0 0 30px rgba(34, 197, 94, 0.4); }
@@ -343,4 +360,61 @@ html, body {
 @keyframes glow-red {
   0%, 100% { box-shadow: 0 0 20px rgba(239, 68, 68, 0.2); }
   50% { box-shadow: 0 0 30px rgba(239, 68, 68, 0.4); }
+}
+
+/* Fullscreen Chart Overrides */
+.fullscreen-chart {
+  border-radius: 24px !important;
+  border: 2px solid rgba(59, 130, 246, 0.5) !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8) !important;
+  cursor: default !important;
+}
+
+.fullscreen-chart .chart-container {
+  background: transparent;
+}
+
+/* Make brush look better in dark mode */
+.recharts-brush-slide {
+  fill: rgba(59, 130, 246, 0.2);
+  stroke: #3b82f6;
+}
+.recharts-brush-traveller rect {
+  fill: #3b82f6;
+  rx: 4;
+}
+
+/* Add more bottom padding and fix overall spacing */
+.dashboard-wrapper {
+  padding: 2rem 2rem 3rem 2rem; /* More bottom padding */
+  padding-bottom: 4rem; /* Extra space at bottom */
+}
+
+/* Ensure last element has margin */
+.dashboard-wrapper > div > *:last-child {
+  margin-bottom: 2rem;
+}
+
+/* Fix map container spacing */
+.map-container {
+  min-height: 350px;
+  max-height: 450px;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 1rem; /* Space after map */
+}
+
+/* Better spacing for glass cards */
+.glass-card {
+  margin-bottom: 1.5rem; /* Space between cards */
+}
+
+/* Fix Permit Panel spacing */
+.alert-box, .permit-panel {
+  margin-bottom: 1.5rem;
+}
+
+/* Ensure grid has proper spacing */
+.grid {
+  margin-bottom: 1.5rem;
 }

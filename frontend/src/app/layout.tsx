@@ -1,6 +1,7 @@
 // src/app/layout.tsx
 import type { Metadata } from "next";
 import "./globals.css";
+import { LayoutProvider } from "@/contexts/LayoutContext";
 
 export const metadata: Metadata = {
   title: "Industrial Safety Monitor",
@@ -15,7 +16,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="m-0 p-0 bg-[#0f172a] overflow-hidden">
-        {children}
+        <LayoutProvider>
+          {children}
+        </LayoutProvider>
       </body>
     </html>
   );

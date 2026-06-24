@@ -1,80 +1,93 @@
-// src/components/PlantMap.tsx
+// src/app/components/PlantMap.tsx
 'use client'
 
-import { MapContainer, TileLayer, CircleMarker, Circle, Popup } from 'react-leaflet'
+import { MapContainer, TileLayer, Circle, CircleMarker, Popup } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
 
-// Fixed coordinates for our "Mock Plant" (You can change these)
-const PLANT_CENTER: [number, number] = [28.6139, 77.2090] 
-
-interface PlantMapProps {
-  isDanger: boolean
-  gasLevel: number
+interface IoTAsset {
+  id: string;
+  name: string;
+  lat: number;
+  lng: number;
+  status: 'learning' | 'active' | 'critical';
+  gasLevel: number;
+  learnedThreshold: number;
 }
 
-export default function PlantMap({ isDanger, gasLevel }: PlantMapProps) {
+interface PlantMapProps {
+  assets: IoTAsset[];
+  isDanger: boolean;
+}
+
+export default function PlantMap({ assets, isDanger }: PlantMapProps) {
   return (
-    <div className="h-[400px] w-full rounded-xl overflow-hidden border border-gray-700 relative z-0 shadow-2xl">
-      <MapContainer 
-        center={PLANT_CENTER} 
-        zoom={16} 
-        scrollWheelZoom={false} 
-        style={{ height: '100%', width: '100%' }}
-      >
-        {/* Dark Matter Tiles for that "Industrial Command Center" look */}
-        <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'
-          url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-        />
+    <MapContainer 
+      center={[28.6139, 77.2090]} 
+      zoom={16} 
+      style={{ height: '100%', width: '100%', borderRadius: '12px' }}
+      zoomControl={false}
+    >
+      {/* Dark Mode Map Tiles */}
+      <TileLayer
+        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/">CARTO</a>'
+        url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+      />
 
-        {/* Sensor A-1 (The Gas Sensor that is spiking) */}
-        <CircleMarker 
-          center={PLANT_CENTER} 
-          radius={12} 
-          color={isDanger ? '#ef4444' : '#22c55e'} 
-          fillColor={isDanger ? '#ef4444' : '#22c55e'} 
-          fillOpacity={1}
-          weight={3}
-        >
-          <Popup>
-            <b>Sensor A-1 (Gas)</b><br />
-            Current Level: {gasLevel}%
-          </Popup>
-        </CircleMarker>
+      {assets.map((asset) => {
+        // 🧠 Self-Harnessing Logic: Calculate dynamic radius based on status
+        let radius = 50; // Default safe radius in meters
+        let color = '#22c55e'; // Green
+        let pulseClass = '';
 
-        {/* The "Danger Zone" Radius - Only appears when gas > 40% */}
-        {isDanger && (
-          <Circle
-            center={PLANT_CENTER}
-            radius={150} // 150 meters radius
-            pathOptions={{ 
-              color: '#ef4444', 
-              fillColor: '#ef4444', 
-              fillOpacity: 0.2, 
-              weight: 2,
-              className: 'animate-pulse' // Tailwind pulse effect on the SVG
-            }}
-          />
-        )}
+        if (asset.status === 'learning') {
+          radius = 30;
+          color = '#3b82f6'; // Blue for learning
+          pulseClass = 'animate-pulse';
+        } else if (asset.status === 'critical') {
+          // Dynamic Geofencing: Radius expands based on how far gas exceeds threshold
+          const excess = asset.gasLevel - asset.learnedThreshold;
+          radius = 50 + (excess * 10); // Expands by 10 meters per 1% excess gas
+          color = '#ef4444'; // Red
+          pulseClass = 'animate-ping';
+        }
 
-        {/* Sensor B-2 (Safe Pressure Sensor nearby) */}
-        <CircleMarker 
-          center={[PLANT_CENTER[0] + 0.0015, PLANT_CENTER[1] + 0.0015]} 
-          radius={10} 
-          color="#3b82f6" 
-          fillColor="#3b82f6" 
-          fillOpacity={0.8}
-          weight={2}
-        >
-          <Popup>Sensor B-2 (Pressure) - Safe</Popup>
-        </CircleMarker>
-
-      </MapContainer>
-      
-      {/* Floating Status Label */}
-      <div className="absolute top-4 left-4 bg-black/80 text-white px-3 py-1 rounded text-xs font-bold z-[1000] border border-gray-600 backdrop-blur-sm">
-         LIVE PLANT VIEW - ZONE B
-      </div>
-    </div>
+        return (
+          <div key={asset.id}>
+            {/* The Dynamic Danger Geofence */}
+            <Circle
+              center={[asset.lat, asset.lng]}
+              radius={radius}
+              pathOptions={{ 
+                color: color, 
+                fillColor: color, 
+                fillOpacity: asset.status === 'critical' ? 0.4 : 0.1,
+                weight: 2
+              }}
+              className={pulseClass}
+            />
+            
+            {/* The Sensor Node */}
+            <CircleMarker 
+              center={[asset.lat, asset.lng]} 
+              radius={8} 
+              pathOptions={{ color: '#fff', fillColor: color, fillOpacity: 1, weight: 2 }}
+            >
+              <Popup>
+                <div className="text-slate-900 p-2">
+                  <h3 className="font-bold text-sm">{asset.name}</h3>
+                  <p className="text-xs">Status: <span className="font-bold uppercase" style={{color}}>{asset.status}</span></p>
+                  {asset.status !== 'learning' && (
+                    <>
+                      <p className="text-xs">Gas: {asset.gasLevel}%</p>
+                      <p className="text-xs text-slate-500">AI Baseline: {asset.learnedThreshold}%</p>
+                    </>
+                  )}
+                </div>
+              </Popup>
+            </CircleMarker>
+          </div>
+        );
+      })}
+    </MapContainer>
   )
 }

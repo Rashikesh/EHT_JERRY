@@ -1,10 +1,28 @@
 // src/components/SensorDashboard.tsx
-'use client'
+"use client"
 
-import { useEffect, useState } from 'react'
-import PlantMap from './PlantMap'
-import ResizableChart from '@/app/components/ResizableChart'
-import '@/styles/dashboard.css'
+import { useEffect, useState } from "react"
+import PlantMap from "./PlantMap"
+import ResizableChart from "./ResizableChart"
+import { useLayout } from "@/contexts/LayoutContext"
+import "@/styles/dashboard.css"
+
+import ConnectionStatus from "./dashboard/ConnectionStatus"
+import DashboardHeader from "./dashboard/DashboardHeader"
+import ControlButtons from "./dashboard/ControlButtons"
+import SensorGrid from "./dashboard/SensorGrid"
+import PermitStatusPanel from "./dashboard/PermitStatusPanel"
+
+// Define the shape of our IoT Assets
+interface IoTAsset {
+  id: string
+  name: string
+  lat: number
+  lng: number
+  status: "learning" | "active" | "critical"
+  gasLevel: number
+  learnedThreshold: number
+}
 
 interface SensorData {
   gas: number
@@ -19,12 +37,47 @@ interface SensorData {
 }
 
 export default function SensorDashboard() {
-  const [data, setData] = useState<SensorData>({ 
-    gas: 0, pressure: 0, temperature: 0, shift: 0,
-    permit_active: true, ai_justification: '', blocked_reason: null
+  const { chartHeight } = useLayout()
+
+  const [data, setData] = useState<SensorData>({
+    gas: 0,
+    pressure: 0,
+    temperature: 0,
+    shift: 0,
+    permit_active: true,
+    ai_justification: "",
+    blocked_reason: null,
   })
-  const [status, setStatus] = useState('Connecting to backend...')
-  const [chartData, setChartData] = useState<{ time: string, gas: number }[]>([])
+  const [status, setStatus] = useState("Connecting to backend...")
+  const [chartData, setChartData] = useState<{ time: string; gas: number }[]>(
+    [],
+  )
+  const [systemEvents, setSystemEvents] = useState<
+    { time: string; type: string }[]
+  >([])
+
+  // 🆕 NEW: State for Plug-and-Play Assets
+  const [assets, setAssets] = useState<IoTAsset[]>([
+    {
+      id: "sensor-1",
+      name: "Main Valve A",
+      lat: 28.6139,
+      lng: 77.209,
+      status: "active",
+      gasLevel: 12,
+      learnedThreshold: 40,
+    },
+    {
+      id: "sensor-2",
+      name: "Secondary Pipe B",
+      lat: 28.6142,
+      lng: 77.2095,
+      status: "active",
+      gasLevel: 15,
+      learnedThreshold: 35,
+    },
+  ])
+  const [showProvisionModal, setShowProvisionModal] = useState(false)
 
   const calculateRiskScore = () => {
     let score = 0
@@ -37,159 +90,195 @@ export default function SensorDashboard() {
   }
 
   const riskScore = calculateRiskScore()
-  const riskColor = riskScore > 70 ? 'red' : riskScore > 40 ? 'yellow' : 'green'
- 
-  useEffect(() => {
-    const ws = new WebSocket(process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:8000/ws')
+  const riskColor = riskScore > 70 ? "red" : riskScore > 40 ? "yellow" : "green"
 
-    ws.onopen = () => setStatus('Connected to PLC')
+  //  NEW: Function to simulate Plug-and-Play Provisioning
+  const provisionNewAsset = (name: string) => {
+    const newAsset: IoTAsset = {
+      id: `sensor-${Date.now()}`,
+      name: name,
+      lat: 28.6135 + Math.random() * 0.001, // Slight random offset
+      lng: 77.2085 + Math.random() * 0.001,
+      status: "learning", // Starts in Self-Harnessing phase
+      gasLevel: 0,
+      learnedThreshold: 0,
+    }
+    setAssets((prev) => [...prev, newAsset])
+
+    // Simulate AI Self-Harnessing (Learning Phase takes 5 seconds)
+    setTimeout(() => {
+      setAssets((prev) =>
+        prev.map((a) =>
+          a.id === newAsset.id
+            ? { ...a, status: "active", learnedThreshold: 40 }
+            : a,
+        ),
+      )
+    }, 5000)
+  }
+
+  useEffect(() => {
+    const ws = new WebSocket(
+      process.env.NEXT_PUBLIC_WS_URL || "ws://localhost:8000/ws",
+    )
+    ws.onopen = () => setStatus("Connected to PLC")
     ws.onmessage = (event) => {
       const parsed = JSON.parse(event.data)
-      setData(prev => ({ ...prev, ...parsed }))
-      
       const now = new Date().toLocaleTimeString()
-      setChartData(prev => {
-        const newData = [...prev, { time: now, gas: parsed.gas }]
-        return newData.length > 30 ? newData.slice(-30) : newData
+
+      setData((prev) => {
+        if (prev.permit_active !== parsed.permit_active) {
+          const eventType = parsed.permit_active
+            ? "PERMIT ACTIVE"
+            : "PERMIT BLOCKED"
+          setSystemEvents((prevEvents) => [
+            ...prevEvents,
+            { time: now, type: eventType },
+          ])
+        }
+        return { ...prev, ...parsed }
       })
+
+      setChartData((prev) => {
+        const newData = [...prev, { time: now, gas: parsed.gas }]
+        return newData.length > 50 ? newData.slice(-50) : newData
+      })
+
+      // Update the main sensor's gas level on the map
+      setAssets((prev) =>
+        prev.map((a) =>
+          a.id === "sensor-1"
+            ? {
+                ...a,
+                gasLevel: parsed.gas,
+                status: parsed.gas > 40 ? "critical" : "active",
+              }
+            : a,
+        ),
+      )
     }
-    ws.onclose = () => setStatus('Disconnected')
-    ws.onerror = () => setStatus('Connection Error')
+    ws.onclose = () => setStatus("Disconnected")
+    ws.onerror = () => setStatus("Connection Error")
 
     return () => {
-      if (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING) {
+      if (
+        ws.readyState === WebSocket.OPEN ||
+        ws.readyState === WebSocket.CONNECTING
+      )
         ws.close()
-      }
     }
   }, [])
 
-  const isConnected = status === 'Connected to PLC'
-
   return (
     <div className="dashboard-wrapper">
-      <div className="w-full h-full space-y-6 flex flex-col">
-        
-        {/* Connection Status Bar */}
-        <div className={`connection-status w-full px-6 py-3 rounded-lg border-2 flex items-center justify-between ${
-          isConnected 
-            ? 'connected bg-green-500/10 border-green-500/50' 
-            : 'disconnected bg-red-500/10 border-red-500/50'
-        }`}>
-          <div className="flex items-center gap-3">
-            <div className={`w-3 h-3 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'} animate-pulse`}></div>
-            <span className={`font-bold text-sm uppercase tracking-wider ${isConnected ? 'text-green-400' : 'text-red-400'}`}>
-              Backend Connection: {isConnected ? 'CONNECTED' : status.toUpperCase()}
-            </span>
-          </div>
-          <div className={`text-xs ${isConnected ? 'text-green-300' : 'text-red-300'}`}>
-            {isConnected ? '✓ Receiving live telemetry' : '⚠ Waiting for data stream...'}
-          </div>
+      <div className="w-full h-full space-y-6 flex flex-col pb-8">
+        <ConnectionStatus status={status} />
+        <DashboardHeader />
+        <div className="mb-6">
+          <ControlButtons />
+        </div>
+        <div className="mb-6">
+          <SensorGrid
+            gas={data.gas}
+            pressure={data.pressure}
+            temperature={data.temperature}
+          />
         </div>
 
-        {/* Header */}
-        <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold text-white">Industrial Safety Monitor</h1>
-            <p className="text-slate-400 text-sm mt-1">Digital Permit Intelligence Agent v1.0</p>
-          </div>
+        <div className="mb-6">
+          <ResizableChart
+            data={chartData}
+            events={systemEvents}
+            riskScore={riskScore}
+            riskColor={riskColor}
+          />
         </div>
 
-        {/* Control Buttons */}
-        <div className="flex justify-center gap-4">
-          <button 
-            onClick={() => fetch('http://localhost:8000/force-emergency', { method: 'POST' })}
-            className="action-btn emergency"
-          >
-            🚨 SIMULATE EMERGENCY
-          </button>
-          <button 
-            onClick={() => fetch('http://localhost:8000/reset-sensors', { method: 'POST' })}
-            className="action-btn reset"
-          >
-            🔄 Reset to Normal
-          </button>
-        </div>
-
-        {/* Sensor Grid with Constraints */}
-        <div className="sensor-grid">
-          <div className={`glass-card p-6 stat-box ${data.gas > 40 ? 'border-red-500/50' : ''}`}>
-            <h3 className="stat-label">Gas Level</h3>
-            <p className={`stat-value ${data.gas > 40 ? 'danger' : ''}`}>{data.gas}%</p>
-            {data.gas > 40 && <p className="text-red-400 font-bold mt-2 text-sm">⚠️ CRITICAL DANGER</p>}
-          </div>
-          <div className="glass-card p-6 stat-box">
-            <h3 className="stat-label">Pressure</h3>
-            <p className="stat-value">{data.pressure} <span className="text-lg text-slate-400">bar</span></p>
-          </div>
-          <div className="glass-card p-6 stat-box">
-            <h3 className="stat-label">Temperature</h3>
-            <p className="stat-value">{data.temperature}°C</p>
-          </div>
-        </div>
-
-        {/* Live Chart with Bounds */}
-        <ResizableChart data={chartData} />
-
-        {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 flex-1">
-          
-          {/* LEFT: Permit Status with Fixed Height */}
-          <div className="lg:col-span-1">
-            <div className={`alert-box ${!data.permit_active ? 'danger' : 'safe'}`}>
-              <h2>Digital Permit Intelligence</h2>
-              <p className="status-text">
-                {data.permit_active ? '🟢 PERMIT ACTIVE' : '🔴 PERMIT BLOCKED'}
-              </p>
-              <p className="text-slate-400 text-sm mb-4">
-                {data.permit_active 
-                  ? 'Environmental parameters are within safe limits. Work may proceed.' 
-                  : 'PLC Interlock Triggered. All hot work is immediately suspended.'}
-              </p>
-              
-              {data.ai_justification && (
-                <div className="justification-box">
-                  <h3 className="text-yellow-400 font-bold text-xs uppercase mb-2">🧠 AI Safety Justification</h3>
-                  <p className="text-slate-300 text-sm whitespace-pre-wrap leading-relaxed">{data.ai_justification}</p>
-                </div>
-              )}
-
-              {!data.permit_active && data.confidence && (
-                <div className="mt-4">
-                  <div className="flex justify-between text-xs text-slate-400 mb-1">
-                    <span>AI Confidence</span>
-                    <span className="text-yellow-400 font-bold">{data.confidence}%</span>
-                  </div>
-                  <div className="w-full bg-gray-700 rounded-full h-1.5">
-                    <div className="bg-yellow-500 h-1.5 rounded-full" style={{ width: `${data.confidence}%` }}></div>
-                  </div>
-                </div>
-              )}
-            </div>
+        {/* Bottom Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1 mb-8">
+          <div className="lg:col-span-4">
+            <PermitStatusPanel
+              permitActive={data.permit_active}
+              aiJustification={data.ai_justification}
+              confidence={data.confidence}
+              gas={data.gas} // 👈 Added
+              pressure={data.pressure} // 👈 Added
+              temperature={data.temperature} // 👈 Added
+            />
           </div>
 
-          {/* RIGHT: Map and Risk Score */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Live Plant Map with Constraints */}
-            <div className="glass-card p-6">
-              <h3 className="stat-label mb-4">📍 Live Plant Telemetry (Zone B)</h3>
-              <div className="map-container">
-                <PlantMap isDanger={!data.permit_active} gasLevel={data.gas} />
+          <div className="lg:col-span-8">
+            <div className="glass-card p-6 mb-4 relative">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="stat-label">
+                  📍 Live Plant Telemetry & Digital Twin
+                </h3>
+                {/* 🆕 NEW: Plug-and-Play Provisioning Button */}
+                <button
+                  onClick={() => setShowProvisionModal(true)}
+                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg transition-all flex items-center gap-2"
+                >
+                  <span className="text-lg"></span> Provision New IoT Asset
+                </button>
+              </div>
+
+              <div
+                className="map-container"
+                style={{ height: `${Math.max(350, chartHeight)}px` }}
+              >
+                <PlantMap assets={assets} isDanger={data.gas > 40} />
               </div>
             </div>
-            
-            {/* AI Risk Score */}
-            <div className="glass-card p-6 flex justify-between items-center" style={{ minHeight: '120px' }}>
-              <div>
-                <h3 className="stat-label mb-1">AI Risk Score</h3>
-                <p className="text-slate-400 text-xs uppercase tracking-wider">
-                  {riskScore > 70 ? '🚨 Critical Risk Detected' : riskScore > 40 ? '⚠️ Elevated Risk' : '✅ Normal Operations'}
-                </p>
+          </div>
+        </div>
+
+        {/* 🆕 NEW: Provisioning Modal */}
+        {showProvisionModal && (
+          <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[1000] flex items-center justify-center p-4">
+            <div className="bg-slate-900 border border-slate-700 rounded-2xl p-8 max-w-md w-full shadow-2xl">
+              <h2 className="text-2xl font-bold text-white mb-2">
+                Provision New IoT Asset
+              </h2>
+              <p className="text-slate-400 text-sm mb-6">
+                Connect a new MQTT/Modbus sensor to the Digital Twin. The AI
+                will automatically harness its baseline.
+              </p>
+
+              <input
+                type="text"
+                placeholder="Asset Name (e.g., Boiler Valve 3)"
+                className="w-full bg-slate-800 border border-slate-700 text-white p-3 rounded-lg mb-4 focus:outline-none focus:border-blue-500"
+                id="assetNameInput"
+              />
+
+              <div className="flex justify-end gap-3">
+                <button
+                  onClick={() => setShowProvisionModal(false)}
+                  className="px-4 py-2 text-slate-400 hover:text-white"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => {
+                    const name =
+                      (
+                        document.getElementById(
+                          "assetNameInput",
+                        ) as HTMLInputElement
+                      ).value || "New Sensor"
+                    provisionNewAsset(name)
+                    setShowProvisionModal(false)
+                  }}
+                  className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg"
+                >
+                  Connect & Start Learning
+                </button>
               </div>
-              <p className={`text-6xl font-black text-${riskColor}-500`}>{riskScore}<span className="text-2xl text-slate-500">/100</span></p>
             </div>
           </div>
+        )}
 
-        </div>
+        <div className="h-8"></div>
       </div>
     </div>
   )

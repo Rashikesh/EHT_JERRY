@@ -1141,3 +1141,333 @@ ModuleNotFoundError("No module named 'faiss.swigfaiss_avx2'")
 2026-06-24 00:55:44,068 | INFO | PERMIT ACTIVE | Gas=28.6% | Pressure=1749.0 bar | Temp=43.0°C | PermitBlocked=False | Confidence=0% | Reason=None
 2026-06-24 00:55:46,070 | INFO | PERMIT ACTIVE | Gas=29.2% | Pressure=1746.0 bar | Temp=43.1°C | PermitBlocked=False | Confidence=0% | Reason=None
 2026-06-24 00:55:48,072 | INFO | PERMIT ACTIVE | Gas=29.8% | Pressure=1742.0 bar | Temp=43.1°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:42:43,360 | INFO | No device provided, using cpu
+2026-06-24 20:42:44,015 | INFO | HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/modules.json "HTTP/1.1 307 Temporary Redirect"
+2026-06-24 20:42:44,049 | INFO | HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-MiniLM-L6-v2/1110a243fdf4706b3f48f1d95db1a4f5529b4d41/modules.json "HTTP/1.1 200 OK"
+2026-06-24 20:42:44,526 | INFO | HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/config_sentence_transformers.json "HTTP/1.1 307 Temporary Redirect"
+2026-06-24 20:42:44,527 | WARNING | Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+2026-06-24 20:42:44,565 | INFO | HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-MiniLM-L6-v2/1110a243fdf4706b3f48f1d95db1a4f5529b4d41/config_sentence_transformers.json "HTTP/1.1 200 OK"
+2026-06-24 20:42:44,590 | INFO | Loading SentenceTransformer model from sentence-transformers/all-MiniLM-L6-v2.
+2026-06-24 20:42:44,937 | INFO | HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/config_sentence_transformers.json "HTTP/1.1 307 Temporary Redirect"
+2026-06-24 20:42:44,989 | INFO | HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-MiniLM-L6-v2/1110a243fdf4706b3f48f1d95db1a4f5529b4d41/config_sentence_transformers.json "HTTP/1.1 200 OK"
+2026-06-24 20:42:45,510 | INFO | HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
+2026-06-24 20:42:45,559 | INFO | HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-MiniLM-L6-v2/1110a243fdf4706b3f48f1d95db1a4f5529b4d41/README.md "HTTP/1.1 200 OK"
+2026-06-24 20:42:46,010 | INFO | HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/modules.json "HTTP/1.1 307 Temporary Redirect"
+2026-06-24 20:42:46,057 | INFO | HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-MiniLM-L6-v2/1110a243fdf4706b3f48f1d95db1a4f5529b4d41/modules.json "HTTP/1.1 200 OK"
+2026-06-24 20:42:46,355 | INFO | HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/sentence_bert_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-06-24 20:42:46,402 | INFO | HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-MiniLM-L6-v2/1110a243fdf4706b3f48f1d95db1a4f5529b4d41/sentence_bert_config.json "HTTP/1.1 200 OK"
+2026-06-24 20:42:46,778 | INFO | HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/adapter_config.json "HTTP/1.1 404 Not Found"
+2026-06-24 20:42:47,351 | INFO | HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-06-24 20:42:47,392 | INFO | HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-MiniLM-L6-v2/1110a243fdf4706b3f48f1d95db1a4f5529b4d41/config.json "HTTP/1.1 200 OK"
+2026-06-24 20:42:48,212 | INFO | HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/processor_config.json "HTTP/1.1 404 Not Found"
+2026-06-24 20:42:48,622 | INFO | HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-06-24 20:42:48,929 | INFO | HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/video_preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-06-24 20:42:49,338 | INFO | HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-06-24 20:42:49,747 | INFO | HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-06-24 20:42:49,778 | INFO | HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-MiniLM-L6-v2/1110a243fdf4706b3f48f1d95db1a4f5529b4d41/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-06-24 20:42:50,260 | INFO | HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-06-24 20:42:50,298 | INFO | HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-MiniLM-L6-v2/1110a243fdf4706b3f48f1d95db1a4f5529b4d41/config.json "HTTP/1.1 200 OK"
+2026-06-24 20:42:50,773 | INFO | HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-06-24 20:42:50,824 | INFO | HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-MiniLM-L6-v2/1110a243fdf4706b3f48f1d95db1a4f5529b4d41/config.json "HTTP/1.1 200 OK"
+2026-06-24 20:42:51,158 | INFO | HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-06-24 20:42:51,204 | INFO | HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-MiniLM-L6-v2/1110a243fdf4706b3f48f1d95db1a4f5529b4d41/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-06-24 20:42:51,600 | INFO | HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/all-MiniLM-L6-v2/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 404 Not Found"
+2026-06-24 20:42:51,906 | INFO | HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/all-MiniLM-L6-v2/tree/main?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-06-24 20:42:52,528 | INFO | HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/1_Pooling/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-06-24 20:42:52,750 | INFO | HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-MiniLM-L6-v2/1110a243fdf4706b3f48f1d95db1a4f5529b4d41/1_Pooling%2Fconfig.json "HTTP/1.1 200 OK"
+2026-06-24 20:42:53,160 | INFO | HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/all-MiniLM-L6-v2 "HTTP/1.1 200 OK"
+2026-06-24 20:42:54,766 | INFO | Loading faiss with AVX512 support.
+2026-06-24 20:42:54,766 | INFO | Could not load library with AVX512 support due to:
+ModuleNotFoundError("No module named 'faiss.swigfaiss_avx512'")
+2026-06-24 20:42:54,766 | INFO | Loading faiss with AVX2 support.
+2026-06-24 20:42:54,766 | INFO | Could not load library with AVX2 support due to:
+ModuleNotFoundError("No module named 'faiss.swigfaiss_avx2'")
+2026-06-24 20:42:54,766 | INFO | Loading faiss.
+2026-06-24 20:42:54,809 | INFO | Successfully loaded faiss.
+2026-06-24 20:42:54,896 | INFO | PERMIT ACTIVE | Gas=13.5% | Pressure=1799.0 bar | Temp=42.6°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:42:56,897 | INFO | PERMIT ACTIVE | Gas=14.2% | Pressure=1799.0 bar | Temp=42.5°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:42:58,898 | INFO | PERMIT ACTIVE | Gas=14.4% | Pressure=1804.0 bar | Temp=42.3°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:43:00,900 | INFO | PERMIT ACTIVE | Gas=14.7% | Pressure=1806.0 bar | Temp=42.3°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:43:02,901 | INFO | PERMIT ACTIVE | Gas=14.9% | Pressure=1809.0 bar | Temp=42.3°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:43:04,902 | INFO | PERMIT ACTIVE | Gas=15.4% | Pressure=1815.0 bar | Temp=42.2°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:43:06,904 | INFO | PERMIT ACTIVE | Gas=15.7% | Pressure=1819.0 bar | Temp=42.1°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:43:08,905 | INFO | PERMIT ACTIVE | Gas=16.5% | Pressure=1820.0 bar | Temp=42.2°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:43:10,908 | INFO | PERMIT ACTIVE | Gas=17.3% | Pressure=1819.0 bar | Temp=42.2°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:43:12,910 | INFO | PERMIT ACTIVE | Gas=18.1% | Pressure=1818.0 bar | Temp=42.3°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:43:14,911 | INFO | PERMIT ACTIVE | Gas=19.0% | Pressure=1813.0 bar | Temp=42.3°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:43:16,912 | INFO | PERMIT ACTIVE | Gas=19.6% | Pressure=1810.0 bar | Temp=42.4°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:43:18,913 | INFO | PERMIT ACTIVE | Gas=19.8% | Pressure=1804.0 bar | Temp=42.4°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:43:20,914 | INFO | PERMIT ACTIVE | Gas=20.1% | Pressure=1802.0 bar | Temp=42.4°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:43:22,917 | INFO | PERMIT ACTIVE | Gas=20.3% | Pressure=1798.0 bar | Temp=42.4°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:43:24,918 | INFO | PERMIT ACTIVE | Gas=20.6% | Pressure=1794.0 bar | Temp=42.4°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:43:26,919 | INFO | PERMIT ACTIVE | Gas=20.9% | Pressure=1788.0 bar | Temp=42.5°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:43:28,921 | INFO | PERMIT ACTIVE | Gas=21.7% | Pressure=1783.0 bar | Temp=42.5°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:43:30,922 | INFO | PERMIT ACTIVE | Gas=22.4% | Pressure=1775.0 bar | Temp=42.5°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:43:32,923 | INFO | PERMIT ACTIVE | Gas=23.3% | Pressure=1767.0 bar | Temp=42.6°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:43:34,925 | INFO | PERMIT ACTIVE | Gas=24.5% | Pressure=1759.0 bar | Temp=42.8°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:43:36,927 | INFO | PERMIT ACTIVE | Gas=26.0% | Pressure=1751.0 bar | Temp=43.0°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:43:39,613 | INFO | PERMIT ACTIVE | Gas=27.5% | Pressure=1743.0 bar | Temp=43.2°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:43:41,615 | INFO | PERMIT ACTIVE | Gas=28.7% | Pressure=1737.0 bar | Temp=43.5°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:43:43,616 | INFO | PERMIT ACTIVE | Gas=29.6% | Pressure=1734.0 bar | Temp=43.7°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:43:45,618 | INFO | PERMIT ACTIVE | Gas=30.2% | Pressure=1730.0 bar | Temp=43.9°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:43:47,620 | INFO | PERMIT ACTIVE | Gas=30.4% | Pressure=1729.0 bar | Temp=44.1°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:43:49,621 | INFO | PERMIT ACTIVE | Gas=30.3% | Pressure=1728.0 bar | Temp=44.2°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:43:51,622 | INFO | PERMIT ACTIVE | Gas=30.5% | Pressure=1725.0 bar | Temp=44.3°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:43:53,623 | INFO | PERMIT ACTIVE | Gas=30.8% | Pressure=1719.0 bar | Temp=44.4°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:43:55,625 | INFO | PERMIT ACTIVE | Gas=31.2% | Pressure=1716.0 bar | Temp=44.4°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:43:57,627 | INFO | PERMIT ACTIVE | Gas=31.7% | Pressure=1713.0 bar | Temp=44.6°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:43:59,628 | INFO | PERMIT ACTIVE | Gas=32.3% | Pressure=1714.0 bar | Temp=44.8°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:44:01,630 | INFO | PERMIT ACTIVE | Gas=32.5% | Pressure=1719.0 bar | Temp=44.9°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:44:03,631 | INFO | PERMIT ACTIVE | Gas=32.6% | Pressure=1723.0 bar | Temp=45.0°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:44:05,632 | INFO | PERMIT ACTIVE | Gas=32.8% | Pressure=1728.0 bar | Temp=45.1°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:44:07,633 | INFO | PERMIT ACTIVE | Gas=33.2% | Pressure=1728.0 bar | Temp=45.1°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:44:09,635 | INFO | PERMIT ACTIVE | Gas=33.5% | Pressure=1726.0 bar | Temp=45.2°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:44:11,636 | INFO | PERMIT ACTIVE | Gas=34.0% | Pressure=1722.0 bar | Temp=45.2°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:44:13,638 | INFO | PERMIT ACTIVE | Gas=34.6% | Pressure=1717.0 bar | Temp=45.3°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:44:15,639 | INFO | PERMIT ACTIVE | Gas=35.0% | Pressure=1715.0 bar | Temp=45.3°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:44:17,641 | INFO | PERMIT ACTIVE | Gas=35.5% | Pressure=1717.0 bar | Temp=45.3°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:44:19,642 | INFO | PERMIT ACTIVE | Gas=35.9% | Pressure=1720.0 bar | Temp=45.2°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:44:21,644 | INFO | PERMIT ACTIVE | Gas=36.4% | Pressure=1724.0 bar | Temp=45.1°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:44:23,646 | INFO | PERMIT ACTIVE | Gas=36.9% | Pressure=1733.0 bar | Temp=45.0°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:44:25,648 | INFO | PERMIT ACTIVE | Gas=37.5% | Pressure=1742.0 bar | Temp=45.0°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:44:27,649 | INFO | PERMIT ACTIVE | Gas=37.8% | Pressure=1746.0 bar | Temp=45.0°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:44:29,650 | INFO | PERMIT ACTIVE | Gas=38.3% | Pressure=1750.0 bar | Temp=45.1°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:44:31,652 | INFO | PERMIT ACTIVE | Gas=39.1% | Pressure=1755.0 bar | Temp=45.3°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:44:33,698 | WARNING | PERMIT BLOCKED | Confidence: 0% | Gas=40.1% | Pressure=1757.0 bar | Temp=45.4°C | PermitBlocked=True | Confidence=0% | Reason=Gas at 40.1% (threshold: 40%)
+2026-06-24 20:44:35,747 | WARNING | PERMIT BLOCKED | Confidence: 2% | Gas=41.0% | Pressure=1757.0 bar | Temp=45.5°C | PermitBlocked=True | Confidence=2% | Reason=Gas at 41.0% (threshold: 40%)
+2026-06-24 20:44:37,761 | WARNING | PERMIT BLOCKED | Confidence: 4% | Gas=42.2% | Pressure=1757.0 bar | Temp=45.6°C | PermitBlocked=True | Confidence=4% | Reason=Gas at 42.2% (threshold: 40%)
+2026-06-24 20:44:39,778 | WARNING | PERMIT BLOCKED | Confidence: 6% | Gas=43.2% | Pressure=1755.0 bar | Temp=45.7°C | PermitBlocked=True | Confidence=6% | Reason=Gas at 43.2% (threshold: 40%)
+2026-06-24 20:44:41,792 | WARNING | PERMIT BLOCKED | Confidence: 7% | Gas=43.9% | Pressure=1751.0 bar | Temp=45.7°C | PermitBlocked=True | Confidence=7% | Reason=Gas at 43.9% (threshold: 40%)
+2026-06-24 20:44:43,809 | WARNING | PERMIT BLOCKED | Confidence: 8% | Gas=44.4% | Pressure=1747.0 bar | Temp=45.8°C | PermitBlocked=True | Confidence=8% | Reason=Gas at 44.4% (threshold: 40%)
+2026-06-24 20:44:45,828 | WARNING | PERMIT BLOCKED | Confidence: 10% | Gas=45.2% | Pressure=1746.0 bar | Temp=46.0°C | PermitBlocked=True | Confidence=10% | Reason=Gas at 45.2% (threshold: 40%)
+2026-06-24 20:44:47,845 | WARNING | PERMIT BLOCKED | Confidence: 11% | Gas=45.7% | Pressure=1747.0 bar | Temp=46.2°C | PermitBlocked=True | Confidence=11% | Reason=Gas at 45.7% (threshold: 40%)
+2026-06-24 20:44:49,862 | WARNING | PERMIT BLOCKED | Confidence: 12% | Gas=46.0% | Pressure=1752.0 bar | Temp=46.3°C | PermitBlocked=True | Confidence=12% | Reason=Gas at 46.0% (threshold: 40%)
+2026-06-24 20:44:51,878 | WARNING | PERMIT BLOCKED | Confidence: 12% | Gas=46.4% | Pressure=1760.0 bar | Temp=46.4°C | PermitBlocked=True | Confidence=12% | Reason=Gas at 46.4% (threshold: 40%)
+2026-06-24 20:44:53,896 | WARNING | PERMIT BLOCKED | Confidence: 13% | Gas=46.8% | Pressure=1768.0 bar | Temp=46.5°C | PermitBlocked=True | Confidence=13% | Reason=Gas at 46.8% (threshold: 40%)
+2026-06-24 20:44:55,942 | WARNING | PERMIT BLOCKED | Confidence: 14% | Gas=47.4% | Pressure=1771.0 bar | Temp=46.6°C | PermitBlocked=True | Confidence=14% | Reason=Gas at 47.4% (threshold: 40%)
+2026-06-24 20:44:57,957 | WARNING | PERMIT BLOCKED | Confidence: 16% | Gas=48.0% | Pressure=1776.0 bar | Temp=46.6°C | PermitBlocked=True | Confidence=16% | Reason=Gas at 48.0% (threshold: 40%)
+2026-06-24 20:44:59,972 | WARNING | PERMIT BLOCKED | Confidence: 17% | Gas=48.8% | Pressure=1777.0 bar | Temp=46.6°C | PermitBlocked=True | Confidence=17% | Reason=Gas at 48.8% (threshold: 40%)
+2026-06-24 20:45:01,986 | WARNING | PERMIT BLOCKED | Confidence: 19% | Gas=49.7% | Pressure=1779.0 bar | Temp=46.8°C | PermitBlocked=True | Confidence=19% | Reason=Gas at 49.7% (threshold: 40%)
+2026-06-24 20:45:04,029 | WARNING | PERMIT BLOCKED | Confidence: 20% | Gas=50.3% | Pressure=1777.0 bar | Temp=46.9°C | PermitBlocked=True | Confidence=20% | Reason=Gas at 50.3% (threshold: 40%)
+2026-06-24 20:45:06,044 | WARNING | PERMIT BLOCKED | Confidence: 21% | Gas=50.8% | Pressure=1777.0 bar | Temp=47.0°C | PermitBlocked=True | Confidence=21% | Reason=Gas at 50.8% (threshold: 40%)
+2026-06-24 20:45:08,059 | WARNING | PERMIT BLOCKED | Confidence: 22% | Gas=51.2% | Pressure=1777.0 bar | Temp=47.1°C | PermitBlocked=True | Confidence=22% | Reason=Gas at 51.2% (threshold: 40%)
+2026-06-24 20:45:10,074 | WARNING | PERMIT BLOCKED | Confidence: 23% | Gas=51.5% | Pressure=1780.0 bar | Temp=47.1°C | PermitBlocked=True | Confidence=23% | Reason=Gas at 51.5% (threshold: 40%)
+2026-06-24 20:45:12,089 | WARNING | PERMIT BLOCKED | Confidence: 23% | Gas=51.7% | Pressure=1782.0 bar | Temp=47.2°C | PermitBlocked=True | Confidence=23% | Reason=Gas at 51.7% (threshold: 40%)
+2026-06-24 20:45:14,118 | WARNING | PERMIT BLOCKED | Confidence: 24% | Gas=52.2% | Pressure=1789.0 bar | Temp=47.3°C | PermitBlocked=True | Confidence=24% | Reason=Gas at 52.2% (threshold: 40%)
+2026-06-24 20:45:16,135 | WARNING | PERMIT BLOCKED | Confidence: 25% | Gas=52.7% | Pressure=1797.0 bar | Temp=47.5°C | PermitBlocked=True | Confidence=25% | Reason=Gas at 52.7% (threshold: 40%)
+2026-06-24 20:45:18,149 | WARNING | PERMIT BLOCKED | Confidence: 26% | Gas=53.4% | Pressure=1805.0 bar | Temp=47.8°C | PermitBlocked=True | Confidence=26% | Reason=Gas at 53.4% (threshold: 40%)
+2026-06-24 20:45:20,194 | WARNING | PERMIT BLOCKED | Confidence: 28% | Gas=54.3% | Pressure=1809.0 bar | Temp=48.0°C | PermitBlocked=True | Confidence=28% | Reason=Gas at 54.3% (threshold: 40%)
+2026-06-24 20:45:22,208 | WARNING | PERMIT BLOCKED | Confidence: 30% | Gas=55.0% | Pressure=1811.0 bar | Temp=48.2°C | PermitBlocked=True | Confidence=30% | Reason=Gas at 55.0% (threshold: 40%)
+2026-06-24 20:45:24,223 | WARNING | PERMIT BLOCKED | Confidence: 31% | Gas=55.7% | Pressure=1811.0 bar | Temp=48.4°C | PermitBlocked=True | Confidence=31% | Reason=Gas at 55.7% (threshold: 40%)
+2026-06-24 20:45:26,238 | WARNING | PERMIT BLOCKED | Confidence: 32% | Gas=56.3% | Pressure=1811.0 bar | Temp=48.6°C | PermitBlocked=True | Confidence=32% | Reason=Gas at 56.3% (threshold: 40%)
+2026-06-24 20:45:28,253 | WARNING | PERMIT BLOCKED | Confidence: 34% | Gas=57.0% | Pressure=1812.0 bar | Temp=48.7°C | PermitBlocked=True | Confidence=34% | Reason=Gas at 57.0% (threshold: 40%)
+2026-06-24 20:45:30,267 | WARNING | PERMIT BLOCKED | Confidence: 35% | Gas=57.5% | Pressure=1812.0 bar | Temp=48.7°C | PermitBlocked=True | Confidence=35% | Reason=Gas at 57.5% (threshold: 40%)
+2026-06-24 20:45:32,282 | WARNING | PERMIT BLOCKED | Confidence: 36% | Gas=58.2% | Pressure=1813.0 bar | Temp=48.8°C | PermitBlocked=True | Confidence=36% | Reason=Gas at 58.2% (threshold: 40%)
+2026-06-24 20:45:34,302 | WARNING | PERMIT BLOCKED | Confidence: 37% | Gas=58.7% | Pressure=1819.0 bar | Temp=48.8°C | PermitBlocked=True | Confidence=37% | Reason=Gas at 58.7% (threshold: 40%)
+2026-06-24 20:45:36,316 | WARNING | PERMIT BLOCKED | Confidence: 38% | Gas=59.1% | Pressure=1821.0 bar | Temp=48.8°C | PermitBlocked=True | Confidence=38% | Reason=Gas at 59.1% (threshold: 40%)
+2026-06-24 20:45:38,329 | WARNING | PERMIT BLOCKED | Confidence: 38% | Gas=59.3% | Pressure=1821.0 bar | Temp=48.9°C | PermitBlocked=True | Confidence=38% | Reason=Gas at 59.3% (threshold: 40%)
+2026-06-24 20:45:40,343 | WARNING | PERMIT BLOCKED | Confidence: 38% | Gas=59.4% | Pressure=1820.0 bar | Temp=49.1°C | PermitBlocked=True | Confidence=38% | Reason=Gas at 59.4% (threshold: 40%)
+2026-06-24 20:45:42,356 | WARNING | PERMIT BLOCKED | Confidence: 39% | Gas=59.8% | Pressure=1817.0 bar | Temp=49.3°C | PermitBlocked=True | Confidence=39% | Reason=Gas at 59.8% (threshold: 40%)
+2026-06-24 20:45:44,369 | WARNING | PERMIT BLOCKED | Confidence: 40% | Gas=60.4% | Pressure=1811.0 bar | Temp=49.6°C | PermitBlocked=True | Confidence=40% | Reason=Gas at 60.4% (threshold: 40%)
+2026-06-24 20:45:46,478 | WARNING | PERMIT BLOCKED | Confidence: 42% | Gas=61.3% | Pressure=1806.0 bar | Temp=49.8°C | PermitBlocked=True | Confidence=42% | Reason=Gas at 61.3% (threshold: 40%)
+2026-06-24 20:45:48,491 | WARNING | PERMIT BLOCKED | Confidence: 43% | Gas=61.9% | Pressure=1801.0 bar | Temp=50.0°C | PermitBlocked=True | Confidence=43% | Reason=Gas at 61.9% (threshold: 40%)
+2026-06-24 20:45:50,528 | WARNING | PERMIT BLOCKED | Confidence: 45% | Gas=62.7% | Pressure=1796.0 bar | Temp=50.1°C | PermitBlocked=True | Confidence=45% | Reason=Gas at 62.7% (threshold: 40%)
+2026-06-24 20:45:52,544 | WARNING | PERMIT BLOCKED | Confidence: 46% | Gas=63.3% | Pressure=1792.0 bar | Temp=50.1°C | PermitBlocked=True | Confidence=46% | Reason=Gas at 63.3% (threshold: 40%)
+2026-06-24 20:45:54,560 | WARNING | PERMIT BLOCKED | Confidence: 47% | Gas=63.9% | Pressure=1787.0 bar | Temp=50.1°C | PermitBlocked=True | Confidence=47% | Reason=Gas at 63.9% (threshold: 40%)
+2026-06-24 20:45:56,580 | WARNING | PERMIT BLOCKED | Confidence: 49% | Gas=64.5% | Pressure=1783.0 bar | Temp=50.1°C | PermitBlocked=True | Confidence=49% | Reason=Gas at 64.5% (threshold: 40%)
+2026-06-24 20:45:58,597 | WARNING | PERMIT BLOCKED | Confidence: 50% | Gas=65.2% | Pressure=1781.0 bar | Temp=50.0°C | PermitBlocked=True | Confidence=50% | Reason=Gas at 65.2% (threshold: 40%)
+2026-06-24 20:46:00,611 | WARNING | PERMIT BLOCKED | Confidence: 50% | Gas=66.3% | Pressure=1780.0 bar | Temp=50.0°C | PermitBlocked=True | Confidence=50% | Reason=Gas at 66.3% (threshold: 40%)
+2026-06-24 20:46:02,625 | WARNING | PERMIT BLOCKED | Confidence: 50% | Gas=67.2% | Pressure=1781.0 bar | Temp=50.0°C | PermitBlocked=True | Confidence=50% | Reason=Gas at 67.2% (threshold: 40%)
+2026-06-24 20:46:04,641 | WARNING | PERMIT BLOCKED | Confidence: 50% | Gas=67.8% | Pressure=1782.0 bar | Temp=50.0°C | PermitBlocked=True | Confidence=50% | Reason=Gas at 67.8% (threshold: 40%)
+2026-06-24 20:46:06,683 | WARNING | PERMIT BLOCKED | Confidence: 50% | Gas=68.2% | Pressure=1783.0 bar | Temp=50.0°C | PermitBlocked=True | Confidence=50% | Reason=Gas at 68.2% (threshold: 40%)
+2026-06-24 20:46:08,697 | WARNING | PERMIT BLOCKED | Confidence: 50% | Gas=68.7% | Pressure=1783.0 bar | Temp=49.9°C | PermitBlocked=True | Confidence=50% | Reason=Gas at 68.7% (threshold: 40%)
+2026-06-24 20:46:10,713 | WARNING | PERMIT BLOCKED | Confidence: 50% | Gas=69.1% | Pressure=1784.0 bar | Temp=49.9°C | PermitBlocked=True | Confidence=50% | Reason=Gas at 69.1% (threshold: 40%)
+2026-06-24 20:46:12,730 | WARNING | PERMIT BLOCKED | Confidence: 50% | Gas=69.4% | Pressure=1786.0 bar | Temp=49.9°C | PermitBlocked=True | Confidence=50% | Reason=Gas at 69.4% (threshold: 40%)
+2026-06-24 20:54:46,710 | INFO | No device provided, using cpu
+2026-06-24 20:54:47,245 | INFO | HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/modules.json "HTTP/1.1 307 Temporary Redirect"
+2026-06-24 20:54:47,246 | WARNING | Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+2026-06-24 20:54:47,312 | INFO | HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-MiniLM-L6-v2/1110a243fdf4706b3f48f1d95db1a4f5529b4d41/modules.json "HTTP/1.1 200 OK"
+2026-06-24 20:54:47,632 | INFO | HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/config_sentence_transformers.json "HTTP/1.1 307 Temporary Redirect"
+2026-06-24 20:54:47,679 | INFO | HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-MiniLM-L6-v2/1110a243fdf4706b3f48f1d95db1a4f5529b4d41/config_sentence_transformers.json "HTTP/1.1 200 OK"
+2026-06-24 20:54:47,680 | INFO | Loading SentenceTransformer model from sentence-transformers/all-MiniLM-L6-v2.
+2026-06-24 20:54:48,042 | INFO | HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/config_sentence_transformers.json "HTTP/1.1 307 Temporary Redirect"
+2026-06-24 20:54:48,100 | INFO | HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-MiniLM-L6-v2/1110a243fdf4706b3f48f1d95db1a4f5529b4d41/config_sentence_transformers.json "HTTP/1.1 200 OK"
+2026-06-24 20:54:48,560 | INFO | HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
+2026-06-24 20:54:48,597 | INFO | HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-MiniLM-L6-v2/1110a243fdf4706b3f48f1d95db1a4f5529b4d41/README.md "HTTP/1.1 200 OK"
+2026-06-24 20:54:48,985 | INFO | HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/modules.json "HTTP/1.1 307 Temporary Redirect"
+2026-06-24 20:54:49,021 | INFO | HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-MiniLM-L6-v2/1110a243fdf4706b3f48f1d95db1a4f5529b4d41/modules.json "HTTP/1.1 200 OK"
+2026-06-24 20:54:49,281 | INFO | HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/sentence_bert_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-06-24 20:54:49,320 | INFO | HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-MiniLM-L6-v2/1110a243fdf4706b3f48f1d95db1a4f5529b4d41/sentence_bert_config.json "HTTP/1.1 200 OK"
+2026-06-24 20:54:49,576 | INFO | HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/adapter_config.json "HTTP/1.1 404 Not Found"
+2026-06-24 20:54:50,090 | INFO | HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-06-24 20:54:50,203 | INFO | HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-MiniLM-L6-v2/1110a243fdf4706b3f48f1d95db1a4f5529b4d41/config.json "HTTP/1.1 200 OK"
+2026-06-24 20:54:50,605 | INFO | HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/processor_config.json "HTTP/1.1 404 Not Found"
+2026-06-24 20:54:50,958 | INFO | HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-06-24 20:54:51,341 | INFO | HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/video_preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-06-24 20:54:51,662 | INFO | HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-06-24 20:54:52,174 | INFO | HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-06-24 20:54:52,215 | INFO | HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-MiniLM-L6-v2/1110a243fdf4706b3f48f1d95db1a4f5529b4d41/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-06-24 20:54:52,554 | INFO | HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-06-24 20:54:52,621 | INFO | HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-MiniLM-L6-v2/1110a243fdf4706b3f48f1d95db1a4f5529b4d41/config.json "HTTP/1.1 200 OK"
+2026-06-24 20:54:52,880 | INFO | HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-06-24 20:54:52,945 | INFO | HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-MiniLM-L6-v2/1110a243fdf4706b3f48f1d95db1a4f5529b4d41/config.json "HTTP/1.1 200 OK"
+2026-06-24 20:54:53,290 | INFO | HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-06-24 20:54:53,343 | INFO | HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-MiniLM-L6-v2/1110a243fdf4706b3f48f1d95db1a4f5529b4d41/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-06-24 20:54:54,490 | INFO | HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/all-MiniLM-L6-v2/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 404 Not Found"
+2026-06-24 20:54:54,900 | INFO | HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/all-MiniLM-L6-v2/tree/main?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-06-24 20:54:55,309 | INFO | HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/1_Pooling/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-06-24 20:54:55,397 | INFO | HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-MiniLM-L6-v2/1110a243fdf4706b3f48f1d95db1a4f5529b4d41/1_Pooling%2Fconfig.json "HTTP/1.1 200 OK"
+2026-06-24 20:54:55,927 | INFO | HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/all-MiniLM-L6-v2 "HTTP/1.1 200 OK"
+2026-06-24 20:54:55,989 | INFO | Loading faiss with AVX512 support.
+2026-06-24 20:54:55,989 | INFO | Could not load library with AVX512 support due to:
+ModuleNotFoundError("No module named 'faiss.swigfaiss_avx512'")
+2026-06-24 20:54:55,989 | INFO | Loading faiss with AVX2 support.
+2026-06-24 20:54:55,990 | INFO | Could not load library with AVX2 support due to:
+ModuleNotFoundError("No module named 'faiss.swigfaiss_avx2'")
+2026-06-24 20:54:55,990 | INFO | Loading faiss.
+2026-06-24 20:54:56,008 | INFO | Successfully loaded faiss.
+2026-06-24 20:54:56,067 | INFO | PERMIT ACTIVE | Gas=13.5% | Pressure=1792.0 bar | Temp=42.7°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:54:58,068 | INFO | PERMIT ACTIVE | Gas=13.8% | Pressure=1793.0 bar | Temp=42.5°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:55:00,070 | INFO | PERMIT ACTIVE | Gas=14.2% | Pressure=1794.0 bar | Temp=42.4°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:55:02,071 | INFO | PERMIT ACTIVE | Gas=14.8% | Pressure=1791.0 bar | Temp=42.4°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:55:04,072 | INFO | PERMIT ACTIVE | Gas=15.0% | Pressure=1787.0 bar | Temp=42.5°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:55:06,073 | INFO | PERMIT ACTIVE | Gas=15.7% | Pressure=1783.0 bar | Temp=42.5°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:55:08,074 | INFO | PERMIT ACTIVE | Gas=16.1% | Pressure=1781.0 bar | Temp=42.6°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:55:10,075 | INFO | PERMIT ACTIVE | Gas=16.7% | Pressure=1782.0 bar | Temp=42.8°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:55:12,076 | INFO | PERMIT ACTIVE | Gas=17.0% | Pressure=1782.0 bar | Temp=42.9°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:55:14,078 | INFO | PERMIT ACTIVE | Gas=17.6% | Pressure=1782.0 bar | Temp=43.0°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:55:16,079 | INFO | PERMIT ACTIVE | Gas=18.2% | Pressure=1782.0 bar | Temp=43.0°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:55:18,081 | INFO | PERMIT ACTIVE | Gas=19.1% | Pressure=1780.0 bar | Temp=43.0°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:55:20,082 | INFO | PERMIT ACTIVE | Gas=19.7% | Pressure=1774.0 bar | Temp=42.9°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:55:22,083 | INFO | PERMIT ACTIVE | Gas=20.8% | Pressure=1771.0 bar | Temp=42.8°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:55:24,085 | INFO | PERMIT ACTIVE | Gas=21.7% | Pressure=1771.0 bar | Temp=42.7°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:55:26,087 | INFO | PERMIT ACTIVE | Gas=22.4% | Pressure=1772.0 bar | Temp=42.6°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:55:28,088 | INFO | PERMIT ACTIVE | Gas=23.2% | Pressure=1773.0 bar | Temp=42.5°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:55:30,091 | INFO | PERMIT ACTIVE | Gas=24.0% | Pressure=1774.0 bar | Temp=42.6°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:55:32,092 | INFO | PERMIT ACTIVE | Gas=24.8% | Pressure=1777.0 bar | Temp=42.6°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:55:34,094 | INFO | PERMIT ACTIVE | Gas=25.7% | Pressure=1778.0 bar | Temp=42.7°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:55:36,095 | INFO | PERMIT ACTIVE | Gas=26.8% | Pressure=1777.0 bar | Temp=42.7°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:55:38,096 | INFO | PERMIT ACTIVE | Gas=27.8% | Pressure=1778.0 bar | Temp=42.9°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:55:40,099 | INFO | PERMIT ACTIVE | Gas=28.5% | Pressure=1778.0 bar | Temp=43.0°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:55:42,100 | INFO | PERMIT ACTIVE | Gas=29.0% | Pressure=1777.0 bar | Temp=43.1°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:55:44,102 | INFO | PERMIT ACTIVE | Gas=29.1% | Pressure=1776.0 bar | Temp=43.3°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:55:46,104 | INFO | PERMIT ACTIVE | Gas=29.2% | Pressure=1776.0 bar | Temp=43.4°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:55:48,107 | INFO | PERMIT ACTIVE | Gas=29.3% | Pressure=1777.0 bar | Temp=43.6°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:55:50,108 | INFO | PERMIT ACTIVE | Gas=29.5% | Pressure=1780.0 bar | Temp=43.8°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:55:52,109 | INFO | PERMIT ACTIVE | Gas=29.7% | Pressure=1785.0 bar | Temp=44.0°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:55:54,112 | INFO | PERMIT ACTIVE | Gas=29.9% | Pressure=1793.0 bar | Temp=44.2°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:55:56,113 | INFO | PERMIT ACTIVE | Gas=30.2% | Pressure=1802.0 bar | Temp=44.3°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:55:58,115 | INFO | PERMIT ACTIVE | Gas=30.1% | Pressure=1808.0 bar | Temp=44.4°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:56:00,116 | INFO | PERMIT ACTIVE | Gas=30.5% | Pressure=1812.0 bar | Temp=44.5°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:56:02,117 | INFO | PERMIT ACTIVE | Gas=30.7% | Pressure=1815.0 bar | Temp=44.5°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:56:04,119 | INFO | PERMIT ACTIVE | Gas=31.2% | Pressure=1815.0 bar | Temp=44.4°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:56:06,121 | INFO | PERMIT ACTIVE | Gas=31.7% | Pressure=1817.0 bar | Temp=44.5°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:56:08,123 | INFO | PERMIT ACTIVE | Gas=32.4% | Pressure=1816.0 bar | Temp=44.5°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:56:10,125 | INFO | PERMIT ACTIVE | Gas=32.8% | Pressure=1817.0 bar | Temp=44.5°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:56:12,127 | INFO | PERMIT ACTIVE | Gas=33.4% | Pressure=1814.0 bar | Temp=44.6°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:56:14,128 | INFO | PERMIT ACTIVE | Gas=33.9% | Pressure=1813.0 bar | Temp=44.7°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:56:16,130 | INFO | PERMIT ACTIVE | Gas=34.6% | Pressure=1814.0 bar | Temp=44.9°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:56:18,132 | INFO | PERMIT ACTIVE | Gas=35.6% | Pressure=1820.0 bar | Temp=45.0°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:56:20,134 | INFO | PERMIT ACTIVE | Gas=36.7% | Pressure=1825.0 bar | Temp=45.2°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:56:22,135 | INFO | PERMIT ACTIVE | Gas=37.7% | Pressure=1834.0 bar | Temp=45.5°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:56:24,138 | INFO | PERMIT ACTIVE | Gas=38.5% | Pressure=1840.0 bar | Temp=45.6°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:56:26,139 | INFO | PERMIT ACTIVE | Gas=39.0% | Pressure=1844.0 bar | Temp=45.7°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:56:28,141 | INFO | PERMIT ACTIVE | Gas=39.5% | Pressure=1843.0 bar | Temp=45.9°C | PermitBlocked=False | Confidence=0% | Reason=None
+2026-06-24 20:56:30,156 | WARNING | PERMIT BLOCKED | Confidence: 0% | Gas=40.1% | Pressure=1842.0 bar | Temp=45.9°C | PermitBlocked=True | Confidence=0% | Reason=Gas at 40.1% (threshold: 40%)
+2026-06-24 20:56:32,170 | WARNING | PERMIT BLOCKED | Confidence: 1% | Gas=40.8% | Pressure=1841.0 bar | Temp=46.0°C | PermitBlocked=True | Confidence=1% | Reason=Gas at 40.8% (threshold: 40%)
+2026-06-24 20:56:34,186 | WARNING | PERMIT BLOCKED | Confidence: 2% | Gas=41.4% | Pressure=1838.0 bar | Temp=46.1°C | PermitBlocked=True | Confidence=2% | Reason=Gas at 41.4% (threshold: 40%)
+2026-06-24 20:56:36,200 | WARNING | PERMIT BLOCKED | Confidence: 4% | Gas=42.0% | Pressure=1837.0 bar | Temp=46.1°C | PermitBlocked=True | Confidence=4% | Reason=Gas at 42.0% (threshold: 40%)
+2026-06-24 20:56:38,216 | WARNING | PERMIT BLOCKED | Confidence: 5% | Gas=42.5% | Pressure=1837.0 bar | Temp=46.1°C | PermitBlocked=True | Confidence=5% | Reason=Gas at 42.5% (threshold: 40%)
+2026-06-24 20:56:40,231 | WARNING | PERMIT BLOCKED | Confidence: 5% | Gas=42.9% | Pressure=1839.0 bar | Temp=46.1°C | PermitBlocked=True | Confidence=5% | Reason=Gas at 42.9% (threshold: 40%)
+2026-06-24 20:56:42,244 | WARNING | PERMIT BLOCKED | Confidence: 7% | Gas=43.5% | Pressure=1839.0 bar | Temp=46.1°C | PermitBlocked=True | Confidence=7% | Reason=Gas at 43.5% (threshold: 40%)
+2026-06-24 20:56:44,259 | WARNING | PERMIT BLOCKED | Confidence: 9% | Gas=44.5% | Pressure=1844.0 bar | Temp=46.1°C | PermitBlocked=True | Confidence=9% | Reason=Gas at 44.5% (threshold: 40%)
+2026-06-24 20:56:46,275 | WARNING | PERMIT BLOCKED | Confidence: 10% | Gas=45.4% | Pressure=1846.0 bar | Temp=46.0°C | PermitBlocked=True | Confidence=10% | Reason=Gas at 45.4% (threshold: 40%)
+2026-06-24 20:56:48,300 | WARNING | PERMIT BLOCKED | Confidence: 12% | Gas=46.2% | Pressure=1846.0 bar | Temp=46.0°C | PermitBlocked=True | Confidence=12% | Reason=Gas at 46.2% (threshold: 40%)
+2026-06-24 20:56:50,313 | WARNING | PERMIT BLOCKED | Confidence: 13% | Gas=46.8% | Pressure=1843.0 bar | Temp=45.9°C | PermitBlocked=True | Confidence=13% | Reason=Gas at 46.8% (threshold: 40%)
+2026-06-24 20:56:52,341 | WARNING | PERMIT BLOCKED | Confidence: 15% | Gas=47.5% | Pressure=1842.0 bar | Temp=45.8°C | PermitBlocked=True | Confidence=15% | Reason=Gas at 47.5% (threshold: 40%)
+2026-06-24 20:56:54,357 | WARNING | PERMIT BLOCKED | Confidence: 15% | Gas=47.9% | Pressure=1841.0 bar | Temp=45.7°C | PermitBlocked=True | Confidence=15% | Reason=Gas at 47.9% (threshold: 40%)
+2026-06-24 20:56:56,372 | WARNING | PERMIT BLOCKED | Confidence: 16% | Gas=48.2% | Pressure=1844.0 bar | Temp=45.6°C | PermitBlocked=True | Confidence=16% | Reason=Gas at 48.2% (threshold: 40%)
+2026-06-24 20:56:58,388 | WARNING | PERMIT BLOCKED | Confidence: 17% | Gas=48.9% | Pressure=1850.0 bar | Temp=45.5°C | PermitBlocked=True | Confidence=17% | Reason=Gas at 48.9% (threshold: 40%)
+2026-06-24 20:57:00,414 | WARNING | PERMIT BLOCKED | Confidence: 19% | Gas=49.7% | Pressure=1856.0 bar | Temp=45.6°C | PermitBlocked=True | Confidence=19% | Reason=Gas at 49.7% (threshold: 40%)
+2026-06-24 20:57:02,429 | WARNING | PERMIT BLOCKED | Confidence: 20% | Gas=50.2% | Pressure=1860.0 bar | Temp=45.6°C | PermitBlocked=True | Confidence=20% | Reason=Gas at 50.2% (threshold: 40%)
+2026-06-24 20:57:04,457 | WARNING | PERMIT BLOCKED | Confidence: 21% | Gas=50.7% | Pressure=1859.0 bar | Temp=45.7°C | PermitBlocked=True | Confidence=21% | Reason=Gas at 50.7% (threshold: 40%)
+2026-06-24 20:57:06,475 | WARNING | PERMIT BLOCKED | Confidence: 22% | Gas=51.2% | Pressure=1856.0 bar | Temp=45.8°C | PermitBlocked=True | Confidence=22% | Reason=Gas at 51.2% (threshold: 40%)
+2026-06-24 20:57:08,496 | WARNING | PERMIT BLOCKED | Confidence: 23% | Gas=51.5% | Pressure=1853.0 bar | Temp=45.9°C | PermitBlocked=True | Confidence=23% | Reason=Gas at 51.5% (threshold: 40%)
+2026-06-24 20:57:10,512 | WARNING | PERMIT BLOCKED | Confidence: 24% | Gas=52.1% | Pressure=1852.0 bar | Temp=45.9°C | PermitBlocked=True | Confidence=24% | Reason=Gas at 52.1% (threshold: 40%)
+2026-06-24 20:57:12,531 | WARNING | PERMIT BLOCKED | Confidence: 25% | Gas=52.8% | Pressure=1850.0 bar | Temp=45.9°C | PermitBlocked=True | Confidence=25% | Reason=Gas at 52.8% (threshold: 40%)
+2026-06-24 20:57:14,547 | WARNING | PERMIT BLOCKED | Confidence: 27% | Gas=53.7% | Pressure=1852.0 bar | Temp=45.9°C | PermitBlocked=True | Confidence=27% | Reason=Gas at 53.7% (threshold: 40%)
+2026-06-24 20:57:16,562 | WARNING | PERMIT BLOCKED | Confidence: 29% | Gas=54.9% | Pressure=1854.0 bar | Temp=46.0°C | PermitBlocked=True | Confidence=29% | Reason=Gas at 54.9% (threshold: 40%)
+2026-06-24 20:57:18,581 | WARNING | PERMIT BLOCKED | Confidence: 32% | Gas=56.1% | Pressure=1855.0 bar | Temp=46.0°C | PermitBlocked=True | Confidence=32% | Reason=Gas at 56.1% (threshold: 40%)
+2026-06-24 20:57:20,597 | WARNING | PERMIT BLOCKED | Confidence: 34% | Gas=57.0% | Pressure=1851.0 bar | Temp=46.1°C | PermitBlocked=True | Confidence=34% | Reason=Gas at 57.0% (threshold: 40%)
+2026-06-24 20:57:22,621 | WARNING | PERMIT BLOCKED | Confidence: 34% | Gas=57.4% | Pressure=1850.0 bar | Temp=46.1°C | PermitBlocked=True | Confidence=34% | Reason=Gas at 57.4% (threshold: 40%)
+2026-06-24 20:57:24,636 | WARNING | PERMIT BLOCKED | Confidence: 35% | Gas=57.9% | Pressure=1847.0 bar | Temp=46.2°C | PermitBlocked=True | Confidence=35% | Reason=Gas at 57.9% (threshold: 40%)
+2026-06-24 20:57:26,651 | WARNING | PERMIT BLOCKED | Confidence: 36% | Gas=58.3% | Pressure=1844.0 bar | Temp=46.3°C | PermitBlocked=True | Confidence=36% | Reason=Gas at 58.3% (threshold: 40%)
+2026-06-24 20:57:28,665 | WARNING | PERMIT BLOCKED | Confidence: 37% | Gas=58.6% | Pressure=1842.0 bar | Temp=46.5°C | PermitBlocked=True | Confidence=37% | Reason=Gas at 58.6% (threshold: 40%)
+2026-06-24 20:57:30,681 | WARNING | PERMIT BLOCKED | Confidence: 38% | Gas=59.3% | Pressure=1845.0 bar | Temp=46.7°C | PermitBlocked=True | Confidence=38% | Reason=Gas at 59.3% (threshold: 40%)
+2026-06-24 20:57:32,696 | WARNING | PERMIT BLOCKED | Confidence: 40% | Gas=60.4% | Pressure=1850.0 bar | Temp=47.0°C | PermitBlocked=True | Confidence=40% | Reason=Gas at 60.4% (threshold: 40%)
+2026-06-24 20:57:34,711 | WARNING | PERMIT BLOCKED | Confidence: 42% | Gas=61.1% | Pressure=1852.0 bar | Temp=47.1°C | PermitBlocked=True | Confidence=42% | Reason=Gas at 61.1% (threshold: 40%)
+2026-06-24 20:57:36,726 | WARNING | PERMIT BLOCKED | Confidence: 43% | Gas=61.6% | Pressure=1856.0 bar | Temp=47.1°C | PermitBlocked=True | Confidence=43% | Reason=Gas at 61.6% (threshold: 40%)
+2026-06-24 20:57:38,741 | WARNING | PERMIT BLOCKED | Confidence: 44% | Gas=62.3% | Pressure=1862.0 bar | Temp=47.2°C | PermitBlocked=True | Confidence=44% | Reason=Gas at 62.3% (threshold: 40%)
+2026-06-24 20:57:40,755 | WARNING | PERMIT BLOCKED | Confidence: 45% | Gas=62.8% | Pressure=1865.0 bar | Temp=47.3°C | PermitBlocked=True | Confidence=45% | Reason=Gas at 62.8% (threshold: 40%)
+2026-06-24 20:57:42,770 | WARNING | PERMIT BLOCKED | Confidence: 46% | Gas=63.2% | Pressure=1864.0 bar | Temp=47.3°C | PermitBlocked=True | Confidence=46% | Reason=Gas at 63.2% (threshold: 40%)
+2026-06-24 20:57:44,782 | WARNING | PERMIT BLOCKED | Confidence: 47% | Gas=63.5% | Pressure=1865.0 bar | Temp=47.4°C | PermitBlocked=True | Confidence=47% | Reason=Gas at 63.5% (threshold: 40%)
+2026-06-24 20:57:46,798 | WARNING | PERMIT BLOCKED | Confidence: 48% | Gas=64.1% | Pressure=1864.0 bar | Temp=47.5°C | PermitBlocked=True | Confidence=48% | Reason=Gas at 64.1% (threshold: 40%)
+2026-06-24 20:57:48,813 | WARNING | PERMIT BLOCKED | Confidence: 49% | Gas=64.6% | Pressure=1860.0 bar | Temp=47.6°C | PermitBlocked=True | Confidence=49% | Reason=Gas at 64.6% (threshold: 40%)
+2026-06-24 20:57:50,826 | WARNING | PERMIT BLOCKED | Confidence: 50% | Gas=65.1% | Pressure=1859.0 bar | Temp=47.7°C | PermitBlocked=True | Confidence=50% | Reason=Gas at 65.1% (threshold: 40%)
+2026-06-24 20:57:52,866 | WARNING | PERMIT BLOCKED | Confidence: 50% | Gas=65.5% | Pressure=1860.0 bar | Temp=47.6°C | PermitBlocked=True | Confidence=50% | Reason=Gas at 65.5% (threshold: 40%)
+2026-06-24 20:57:54,880 | WARNING | PERMIT BLOCKED | Confidence: 50% | Gas=65.8% | Pressure=1864.0 bar | Temp=47.7°C | PermitBlocked=True | Confidence=50% | Reason=Gas at 65.8% (threshold: 40%)
+2026-06-24 20:57:56,893 | WARNING | PERMIT BLOCKED | Confidence: 50% | Gas=66.3% | Pressure=1867.0 bar | Temp=47.8°C | PermitBlocked=True | Confidence=50% | Reason=Gas at 66.3% (threshold: 40%)
+2026-06-24 20:57:58,906 | WARNING | PERMIT BLOCKED | Confidence: 50% | Gas=67.0% | Pressure=1873.0 bar | Temp=47.9°C | PermitBlocked=True | Confidence=50% | Reason=Gas at 67.0% (threshold: 40%)
+2026-06-24 20:58:00,921 | WARNING | PERMIT BLOCKED | Confidence: 50% | Gas=67.9% | Pressure=1880.0 bar | Temp=48.0°C | PermitBlocked=True | Confidence=50% | Reason=Gas at 67.9% (threshold: 40%)
+2026-06-24 20:58:02,939 | WARNING | PERMIT BLOCKED | Confidence: 50% | Gas=68.8% | Pressure=1882.0 bar | Temp=48.1°C | PermitBlocked=True | Confidence=50% | Reason=Gas at 68.8% (threshold: 40%)
+2026-06-24 20:58:04,955 | WARNING | PERMIT BLOCKED | Confidence: 50% | Gas=69.7% | Pressure=1882.0 bar | Temp=48.3°C | PermitBlocked=True | Confidence=50% | Reason=Gas at 69.7% (threshold: 40%)
+2026-06-24 20:58:06,971 | WARNING | PERMIT BLOCKED | Confidence: 50% | Gas=70.6% | Pressure=1882.0 bar | Temp=48.3°C | PermitBlocked=True | Confidence=50% | Reason=Gas at 70.6% (threshold: 40%)
+2026-06-24 20:58:09,018 | WARNING | PERMIT BLOCKED | Confidence: 50% | Gas=71.4% | Pressure=1883.0 bar | Temp=48.3°C | PermitBlocked=True | Confidence=50% | Reason=Gas at 71.4% (threshold: 40%)
+2026-06-24 20:58:11,033 | WARNING | PERMIT BLOCKED | Confidence: 50% | Gas=72.2% | Pressure=1884.0 bar | Temp=48.4°C | PermitBlocked=True | Confidence=50% | Reason=Gas at 72.2% (threshold: 40%)
+2026-06-24 20:58:13,050 | WARNING | PERMIT BLOCKED | Confidence: 50% | Gas=73.0% | Pressure=1889.0 bar | Temp=48.4°C | PermitBlocked=True | Confidence=50% | Reason=Gas at 73.0% (threshold: 40%)
+2026-06-24 20:58:15,065 | WARNING | PERMIT BLOCKED | Confidence: 50% | Gas=74.2% | Pressure=1895.0 bar | Temp=48.5°C | PermitBlocked=True | Confidence=50% | Reason=Gas at 74.2% (threshold: 40%)
+2026-06-24 20:58:17,079 | WARNING | PERMIT BLOCKED | Confidence: 50% | Gas=75.0% | Pressure=1897.0 bar | Temp=48.7°C | PermitBlocked=True | Confidence=50% | Reason=Gas at 75.0% (threshold: 40%)
+2026-06-24 20:58:19,094 | WARNING | PERMIT BLOCKED | Confidence: 50% | Gas=75.7% | Pressure=1899.0 bar | Temp=49.0°C | PermitBlocked=True | Confidence=50% | Reason=Gas at 75.7% (threshold: 40%)
+2026-06-24 20:58:21,109 | WARNING | PERMIT BLOCKED | Confidence: 50% | Gas=76.3% | Pressure=1899.0 bar | Temp=49.2°C | PermitBlocked=True | Confidence=50% | Reason=Gas at 76.3% (threshold: 40%)
+2026-06-24 20:58:23,126 | WARNING | PERMIT BLOCKED | Confidence: 50% | Gas=76.9% | Pressure=1899.0 bar | Temp=49.5°C | PermitBlocked=True | Confidence=50% | Reason=Gas at 76.9% (threshold: 40%)
+2026-06-24 20:58:25,142 | WARNING | PERMIT BLOCKED | Confidence: 50% | Gas=77.1% | Pressure=1903.0 bar | Temp=49.7°C | PermitBlocked=True | Confidence=50% | Reason=Gas at 77.1% (threshold: 40%)
+2026-06-24 20:58:27,157 | WARNING | PERMIT BLOCKED | Confidence: 50% | Gas=77.3% | Pressure=1911.0 bar | Temp=49.8°C | PermitBlocked=True | Confidence=50% | Reason=Gas at 77.3% (threshold: 40%)
+2026-06-24 20:58:29,172 | WARNING | PERMIT BLOCKED | Confidence: 50% | Gas=77.6% | Pressure=1915.0 bar | Temp=49.9°C | PermitBlocked=True | Confidence=50% | Reason=Gas at 77.6% (threshold: 40%)
+2026-06-24 20:58:31,188 | WARNING | PERMIT BLOCKED | Confidence: 50% | Gas=77.9% | Pressure=1920.0 bar | Temp=49.9°C | PermitBlocked=True | Confidence=50% | Reason=Gas at 77.9% (threshold: 40%)
+2026-06-24 20:58:33,205 | WARNING | PERMIT BLOCKED | Confidence: 50% | Gas=78.3% | Pressure=1925.0 bar | Temp=50.0°C | PermitBlocked=True | Confidence=50% | Reason=Gas at 78.3% (threshold: 40%)
+2026-06-24 20:58:35,218 | WARNING | PERMIT BLOCKED | Confidence: 50% | Gas=78.8% | Pressure=1927.0 bar | Temp=50.0°C | PermitBlocked=True | Confidence=50% | Reason=Gas at 78.8% (threshold: 40%)
+2026-06-24 20:58:37,238 | WARNING | PERMIT BLOCKED | Confidence: 50% | Gas=79.5% | Pressure=1928.0 bar | Temp=50.1°C | PermitBlocked=True | Confidence=50% | Reason=Gas at 79.5% (threshold: 40%)
+2026-06-24 20:58:39,253 | WARNING | PERMIT BLOCKED | Confidence: 50% | Gas=80.1% | Pressure=1934.0 bar | Temp=50.1°C | PermitBlocked=True | Confidence=50% | Reason=Gas at 80.1% (threshold: 40%)
+2026-06-24 20:58:41,269 | WARNING | PERMIT BLOCKED | Confidence: 50% | Gas=81.0% | Pressure=1937.0 bar | Temp=50.1°C | PermitBlocked=True | Confidence=50% | Reason=Gas at 81.0% (threshold: 40%)
+2026-06-24 20:58:43,285 | WARNING | PERMIT BLOCKED | Confidence: 50% | Gas=81.5% | Pressure=1938.0 bar | Temp=50.1°C | PermitBlocked=True | Confidence=50% | Reason=Gas at 81.5% (threshold: 40%)
+2026-06-24 20:58:45,379 | WARNING | PERMIT BLOCKED | Confidence: 50% | Gas=82.2% | Pressure=1939.0 bar | Temp=50.0°C | PermitBlocked=True | Confidence=50% | Reason=Gas at 82.2% (threshold: 40%)
+2026-06-24 20:58:47,393 | WARNING | PERMIT BLOCKED | Confidence: 50% | Gas=82.9% | Pressure=1939.0 bar | Temp=50.0°C | PermitBlocked=True | Confidence=50% | Reason=Gas at 82.9% (threshold: 40%)
+2026-06-24 20:58:49,410 | WARNING | PERMIT BLOCKED | Confidence: 50% | Gas=83.7% | Pressure=1938.0 bar | Temp=49.9°C | PermitBlocked=True | Confidence=50% | Reason=Gas at 83.7% (threshold: 40%)
+2026-06-24 20:58:51,429 | WARNING | PERMIT BLOCKED | Confidence: 50% | Gas=84.6% | Pressure=1937.0 bar | Temp=49.9°C | PermitBlocked=True | Confidence=50% | Reason=Gas at 84.6% (threshold: 40%)
+2026-06-24 20:58:53,446 | WARNING | PERMIT BLOCKED | Confidence: 50% | Gas=85.7% | Pressure=1935.0 bar | Temp=50.0°C | PermitBlocked=True | Confidence=50% | Reason=Gas at 85.7% (threshold: 40%)
+2026-06-24 20:58:55,461 | WARNING | PERMIT BLOCKED | Confidence: 50% | Gas=86.7% | Pressure=1935.0 bar | Temp=50.2°C | PermitBlocked=True | Confidence=50% | Reason=Gas at 86.7% (threshold: 40%)
+2026-06-24 20:58:57,477 | WARNING | PERMIT BLOCKED | Confidence: 50% | Gas=87.5% | Pressure=1936.0 bar | Temp=50.3°C | PermitBlocked=True | Confidence=50% | Reason=Gas at 87.5% (threshold: 40%)
+2026-06-24 20:58:59,490 | WARNING | PERMIT BLOCKED | Confidence: 50% | Gas=88.0% | Pressure=1938.0 bar | Temp=50.4°C | PermitBlocked=True | Confidence=50% | Reason=Gas at 88.0% (threshold: 40%)
+2026-06-24 20:59:01,506 | WARNING | PERMIT BLOCKED | Confidence: 50% | Gas=88.6% | Pressure=1942.0 bar | Temp=50.5°C | PermitBlocked=True | Confidence=50% | Reason=Gas at 88.6% (threshold: 40%)
+2026-06-24 20:59:03,521 | WARNING | PERMIT BLOCKED | Confidence: 50% | Gas=89.2% | Pressure=1946.0 bar | Temp=50.5°C | PermitBlocked=True | Confidence=50% | Reason=Gas at 89.2% (threshold: 40%)
+2026-06-24 20:59:05,537 | WARNING | PERMIT BLOCKED | Confidence: 50% | Gas=90.1% | Pressure=1949.0 bar | Temp=50.6°C | PermitBlocked=True | Confidence=50% | Reason=Gas at 90.1% (threshold: 40%)
+2026-06-24 20:59:07,553 | WARNING | PERMIT BLOCKED | Confidence: 50% | Gas=91.0% | Pressure=1947.0 bar | Temp=50.6°C | PermitBlocked=True | Confidence=50% | Reason=Gas at 91.0% (threshold: 40%)
+2026-06-24 20:59:09,568 | WARNING | PERMIT BLOCKED | Confidence: 50% | Gas=92.2% | Pressure=1947.0 bar | Temp=50.6°C | PermitBlocked=True | Confidence=50% | Reason=Gas at 92.2% (threshold: 40%)
+2026-06-24 20:59:11,583 | WARNING | PERMIT BLOCKED | Confidence: 50% | Gas=93.5% | Pressure=1945.0 bar | Temp=50.6°C | PermitBlocked=True | Confidence=50% | Reason=Gas at 93.5% (threshold: 40%)
+2026-06-24 20:59:13,598 | WARNING | PERMIT BLOCKED | Confidence: 50% | Gas=94.5% | Pressure=1943.0 bar | Temp=50.7°C | PermitBlocked=True | Confidence=50% | Reason=Gas at 94.5% (threshold: 40%)
+2026-06-24 20:59:15,613 | WARNING | PERMIT BLOCKED | Confidence: 50% | Gas=95.2% | Pressure=1943.0 bar | Temp=50.7°C | PermitBlocked=True | Confidence=50% | Reason=Gas at 95.2% (threshold: 40%)
+2026-06-24 20:59:17,632 | WARNING | PERMIT BLOCKED | Confidence: 50% | Gas=96.1% | Pressure=1947.0 bar | Temp=50.6°C | PermitBlocked=True | Confidence=50% | Reason=Gas at 96.1% (threshold: 40%)
+2026-06-24 20:59:19,648 | WARNING | PERMIT BLOCKED | Confidence: 50% | Gas=96.9% | Pressure=1949.0 bar | Temp=50.6°C | PermitBlocked=True | Confidence=50% | Reason=Gas at 96.9% (threshold: 40%)
+2026-06-24 20:59:21,663 | WARNING | PERMIT BLOCKED | Confidence: 50% | Gas=97.6% | Pressure=1953.0 bar | Temp=50.7°C | PermitBlocked=True | Confidence=50% | Reason=Gas at 97.6% (threshold: 40%)
+2026-06-24 20:59:23,679 | WARNING | PERMIT BLOCKED | Confidence: 50% | Gas=98.3% | Pressure=1959.0 bar | Temp=50.7°C | PermitBlocked=True | Confidence=50% | Reason=Gas at 98.3% (threshold: 40%)
+2026-06-24 20:59:25,694 | WARNING | PERMIT BLOCKED | Confidence: 50% | Gas=99.0% | Pressure=1964.0 bar | Temp=50.7°C | PermitBlocked=True | Confidence=50% | Reason=Gas at 99.0% (threshold: 40%)
+2026-06-24 20:59:27,710 | WARNING | PERMIT BLOCKED | Confidence: 50% | Gas=99.5% | Pressure=1966.0 bar | Temp=50.7°C | PermitBlocked=True | Confidence=50% | Reason=Gas at 99.5% (threshold: 40%)
+2026-06-24 20:59:29,726 | WARNING | PERMIT BLOCKED | Confidence: 50% | Gas=99.9% | Pressure=1965.0 bar | Temp=50.8°C | PermitBlocked=True | Confidence=50% | Reason=Gas at 99.9% (threshold: 40%)
+2026-06-24 20:59:31,742 | WARNING | PERMIT BLOCKED | Confidence: 50% | Gas=99.8% | Pressure=1961.0 bar | Temp=50.9°C | PermitBlocked=True | Confidence=50% | Reason=Gas at 99.8% (threshold: 40%)
+2026-06-24 20:59:33,758 | WARNING | PERMIT BLOCKED | Confidence: 50% | Gas=99.8% | Pressure=1958.0 bar | Temp=50.9°C | PermitBlocked=True | Confidence=50% | Reason=Gas at 99.8% (threshold: 40%)
+2026-06-24 20:59:35,784 | WARNING | PERMIT BLOCKED | Confidence: 50% | Gas=99.9% | Pressure=1950.0 bar | Temp=50.9°C | PermitBlocked=True | Confidence=50% | Reason=Gas at 99.9% (threshold: 40%)
+2026-06-24 20:59:37,803 | WARNING | PERMIT BLOCKED | Confidence: 50% | Gas=99.9% | Pressure=1945.0 bar | Temp=51.0°C | PermitBlocked=True | Confidence=50% | Reason=Gas at 99.9% (threshold: 40%)
+2026-06-24 20:59:39,820 | WARNING | PERMIT BLOCKED | Confidence: 50% | Gas=99.9% | Pressure=1940.0 bar | Temp=51.0°C | PermitBlocked=True | Confidence=50% | Reason=Gas at 99.9% (threshold: 40%)
+2026-06-24 20:59:41,834 | WARNING | PERMIT BLOCKED | Confidence: 50% | Gas=99.9% | Pressure=1937.0 bar | Temp=51.0°C | PermitBlocked=True | Confidence=50% | Reason=Gas at 99.9% (threshold: 40%)
+2026-06-24 20:59:43,850 | WARNING | PERMIT BLOCKED | Confidence: 50% | Gas=100.0% | Pressure=1935.0 bar | Temp=51.1°C | PermitBlocked=True | Confidence=50% | Reason=Gas at 100.0% (threshold: 40%)
+2026-06-24 20:59:45,866 | WARNING | PERMIT BLOCKED | Confidence: 50% | Gas=100.0% | Pressure=1936.0 bar | Temp=51.2°C | PermitBlocked=True | Confidence=50% | Reason=Gas at 100.0% (threshold: 40%)
