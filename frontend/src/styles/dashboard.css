@@ -13,11 +13,13 @@
   height: 100vh;
   margin: 0;
   padding: 2rem;
+  padding-bottom: 4rem; /* Extra space at bottom for scrolling */
   
   /* Layout & Scrolling */
   overflow-y: auto;
   overflow-x: hidden;
   box-sizing: border-box;
+  scroll-behavior: smooth; /* 🆕 Enables smooth scrolling for Jump to Map button */
   
   color: #f8fafc;
   font-family: 'Inter', system-ui, sans-serif;
@@ -55,16 +57,15 @@ html, body {
   border-radius: 16px;
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  margin-bottom: 1.5rem;
   
-  /* SIZE CONSTRAINTS */
+  /* 🆕 FIXED: Removed max-height: 400px and overflow: hidden which were clipping the map! */
   min-height: 120px;
-  max-height: 400px;
-  overflow: hidden;
 }
 
 .glass-card:hover {
   border-color: rgba(59, 130, 246, 0.3);
-  transform: translateY(-4px);
+  transform: translateY(-2px); /* Reduced translateY to prevent layout shift */
   box-shadow: 0 12px 40px rgba(59, 130, 246, 0.15);
 }
 
@@ -98,7 +99,7 @@ html, body {
 }
 
 .stat-value {
-  font-size: clamp(2rem, 4vw, 3rem); /* Responsive sizing between 2rem and 3rem */
+  font-size: clamp(2rem, 4vw, 3rem);
   font-weight: 800;
   color: #f8fafc;
   transition: all 0.3s ease;
@@ -118,16 +119,15 @@ html, body {
   75% { transform: translateX(5px); }
 }
 
-/* 4. Alert Box with Fixed Dimensions */
+/* 4. Alert Box (Permit Panel) */
 .alert-box {
   text-align: left;
   padding: 2rem;
   border-radius: 16px;
   transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   
-  /* FIXED HEIGHT CONSTRAINTS */
-  min-height: 500px;
-  max-height: 700px;
+  /* 🆕 FIXED: Removed max-height: 700px so the permit panel can expand fully */
+  min-height: 400px;
   height: 100%;
   
   display: flex;
@@ -176,7 +176,7 @@ html, body {
   border-radius: 12px;
   padding: 1rem;
   margin-top: auto;
-  max-height: 200px;
+  max-height: 250px;
   overflow-y: auto;
 }
 
@@ -203,12 +203,8 @@ html, body {
 }
 
 .action-btn.emergency:hover {
-  transform: translateY(-2px) scale(1.05);
+  transform: translateY(-2px) scale(1.02);
   box-shadow: 0 8px 30px rgba(239, 68, 68, 0.6);
-}
-
-.action-btn.emergency:active {
-  transform: translateY(0) scale(0.98);
 }
 
 .action-btn.reset {
@@ -218,12 +214,8 @@ html, body {
 }
 
 .action-btn.reset:hover {
-  transform: translateY(-2px) scale(1.05);
+  transform: translateY(-2px) scale(1.02);
   box-shadow: 0 8px 30px rgba(59, 130, 246, 0.6);
-}
-
-.action-btn.reset:active {
-  transform: translateY(0) scale(0.98);
 }
 
 /* 6. Chart Customization with Bounds */
@@ -232,14 +224,12 @@ html, body {
   border-radius: 12px;
   padding: 1rem;
   min-height: 250px;
-  max-height: 500px;
 }
 
 /* 7. Resizable Container with Proper Bounds */
 .resizable-container {
   position: relative;
   min-height: 250px !important;
-  max-height: 600px !important;
   min-width: 400px !important;
   transition: box-shadow 0.2s ease;
 }
@@ -261,19 +251,16 @@ html, body {
   opacity: 1;
 }
 
-/* Corner Handles */
 .resize-handle-nw { top: -4px; left: -4px; width: 12px; height: 12px; cursor: nw-resize; }
 .resize-handle-ne { top: -4px; right: -4px; width: 12px; height: 12px; cursor: ne-resize; }
 .resize-handle-sw { bottom: -4px; left: -4px; width: 12px; height: 12px; cursor: sw-resize; }
 .resize-handle-se { bottom: -4px; right: -4px; width: 12px; height: 12px; cursor: se-resize; }
 
-/* Edge Handles */
 .resize-handle-n { top: -4px; left: 20px; right: 20px; height: 8px; cursor: n-resize; }
 .resize-handle-s { bottom: -4px; left: 20px; right: 20px; height: 8px; cursor: s-resize; }
 .resize-handle-e { top: 20px; right: -4px; bottom: 20px; width: 8px; cursor: e-resize; }
 .resize-handle-w { top: 20px; left: -4px; bottom: 20px; width: 8px; cursor: w-resize; }
 
-/* Visible resize indicator */
 .resize-handle::after {
   content: '';
   position: absolute;
@@ -281,9 +268,7 @@ html, body {
   border-radius: 2px;
 }
 
-.resize-handle-nw::after, .resize-handle-se::after {
-  width: 8px; height: 8px;
-}
+.resize-handle-nw::after, .resize-handle-se::after,
 .resize-handle-ne::after, .resize-handle-sw::after {
   width: 8px; height: 8px;
 }
@@ -302,10 +287,10 @@ html, body {
 
 /* 8. Map Container Constraints */
 .map-container {
-  min-height: 300px;
-  max-height: 400px;
+  height: 450px; /* 🆕 FIXED: Explicit height for Leaflet */
   border-radius: 12px;
-  overflow: hidden;
+  overflow: hidden; /* Keeps the map corners rounded */
+  margin-bottom: 1rem;
 }
 
 /* 9. Grid Layout Constraints */
@@ -345,13 +330,6 @@ html, body {
   animation: glow-red 2s ease-in-out infinite;
 }
 
-/* Responsive grid with golden proportions */
-@supports (grid-template-columns: clamp(200px, 1fr, 400px)) {
-  .sensor-grid {
-    grid-template-columns: repeat(auto-fit, minmax(clamp(200px, 25vw, 400px), 1fr));
-  }
-}
-
 @keyframes glow-green {
   0%, 100% { box-shadow: 0 0 20px rgba(34, 197, 94, 0.2); }
   50% { box-shadow: 0 0 30px rgba(34, 197, 94, 0.4); }
@@ -384,37 +362,7 @@ html, body {
   rx: 4;
 }
 
-/* Add more bottom padding and fix overall spacing */
-.dashboard-wrapper {
-  padding: 2rem 2rem 3rem 2rem; /* More bottom padding */
-  padding-bottom: 4rem; /* Extra space at bottom */
-}
-
 /* Ensure last element has margin */
 .dashboard-wrapper > div > *:last-child {
   margin-bottom: 2rem;
-}
-
-/* Fix map container spacing */
-.map-container {
-  min-height: 350px;
-  max-height: 450px;
-  border-radius: 12px;
-  overflow: hidden;
-  margin-bottom: 1rem; /* Space after map */
-}
-
-/* Better spacing for glass cards */
-.glass-card {
-  margin-bottom: 1.5rem; /* Space between cards */
-}
-
-/* Fix Permit Panel spacing */
-.alert-box, .permit-panel {
-  margin-bottom: 1.5rem;
-}
-
-/* Ensure grid has proper spacing */
-.grid {
-  margin-bottom: 1.5rem;
 }
