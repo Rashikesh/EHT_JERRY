@@ -8,6 +8,7 @@ import asyncio
 import json
 import time
 import datetime
+import threading, requests
 
 from core.config import Config
 from core.audit_chain import audit_chain
@@ -46,6 +47,16 @@ def update_pressure(value):
 def update_temp(value):
     global current_temp
     current_temp = float(value)
+
+def keep_alive():
+    while True:
+        time.sleep(300)  # 5 minutes
+        try:
+            requests.get("https://industrial-safety-backend.onrender.com/health")
+        except:
+            pass
+
+threading.Thread(target=keep_alive, daemon=True).start()
 
 mqtt_manager.connect( Config.MQTT_BROKER, 
     Config.MQTT_PORT,
@@ -317,6 +328,10 @@ async def websocket_endpoint(websocket: WebSocket):
             await websocket.receive_text()
     except WebSocketDisconnect:
         manager.disconnect(websocket)
+
+@app.get("/health")
+async def health_check():
+    return {"status": "healthy", "timestamp": time.time()}
 
 if __name__ == "__main__":
     import uvicorn
