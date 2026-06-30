@@ -1,9 +1,5 @@
 import os
 import threading
-from langchain_community.embeddings import HuggingFaceEmbeddings
-from langchain_community.vectorstores import FAISS
-from langchain_core.documents import Document
-from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 class RAGEngine:
     _instance = None
@@ -21,7 +17,25 @@ class RAGEngine:
             return
         self._initialized = True
         
-        print("🧠 Initializing Lightweight RAG Engine (CPU)...")
+        # 🚀 LAZY LOADING: Do NOT load heavy models here!
+        self.embeddings = None
+        self.vectorstore = None
+        self.retriever = None
+        print("🧠 RAG Engine initialized (Lazy Mode - saving memory).")
+
+    def _load_models(self):
+        """Load heavy AI models ONLY when the first query happens"""
+        if self.embeddings is not None:
+            return # Already loaded
+            
+        print("⏳ Loading Sentence Transformers & FAISS into memory...")
+        
+        # Import heavy libraries ONLY when needed
+        from langchain_community.embeddings import HuggingFaceEmbeddings
+        from langchain_community.vectorstores import FAISS
+        from langchain_core.documents import Document
+        from langchain_text_splitters import RecursiveCharacterTextSplitter
+        
         model_name = "sentence-transformers/all-MiniLM-L6-v2"
         self.embeddings = HuggingFaceEmbeddings(model_name=model_name)
         
@@ -49,9 +63,12 @@ class RAGEngine:
             self._load_fallback_data()
 
         self.retriever = self.vectorstore.as_retriever(search_kwargs={"k": 2})
-        print("✅ RAG Engine ready. Historical incidents indexed.")
+        print("✅ RAG models loaded and indexed successfully.")
 
     def _load_fallback_data(self):
+        from langchain_community.vectorstores import FAISS
+        from langchain_core.documents import Document
+        
         incidents = [
             Document(page_content="Incident 2021-04: High gas levels (45%) in Zone B led to a minor flash fire. Action: Evacuate zone, close main isolation valve."),
             Document(page_content="Standard Operating Procedure (SOP): If gas > 40%, immediately revoke all hot-work permits and sound facility alarm."),
@@ -60,6 +77,9 @@ class RAGEngine:
         self.vectorstore = FAISS.from_documents(incidents, self.embeddings)
 
     def get_context(self, query: str) -> str:
+        # 🚀 Ensure models are loaded before querying
+        self._load_models() 
+        
         docs = self.retriever.invoke(query)
         if not docs:
             return "No historical incidents found matching current conditions."
