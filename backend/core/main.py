@@ -59,9 +59,7 @@ def keep_alive():
 threading.Thread(target=keep_alive, daemon=True).start()
 
 mqtt_manager.connect( Config.MQTT_BROKER, 
-    Config.MQTT_PORT,
-    Config.MQTT_USERNAME,
-    Config.MQTT_PASSWORD)
+    Config.MQTT_PORT)
 mqtt_manager.subscribe("factory/zone-a/gas", lambda data: update_gas(data['value']))
 mqtt_manager.subscribe("factory/zone-a/pressure", lambda data: update_pressure(data['value']))
 mqtt_manager.subscribe("factory/zone-a/temp", lambda data: update_temp(data['value']))
