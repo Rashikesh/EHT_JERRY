@@ -1,7 +1,7 @@
 // src/components/SensorDashboard.tsx
 "use client"
 
-import { useEffect, useState, useRef } from "react" // 🆕 Added useRef for Audio
+import { useEffect, useState, useRef } from "react"
 import ResizableChart from "./ResizableChart"
 import { useLayout } from "@/contexts/LayoutContext"
 import "@/styles/dashboard.css"
@@ -14,7 +14,11 @@ import PermitStatusPanel from "./dashboard/PermitStatusPanel"
 import DigitalTwin3D from "./DigitalTwin3D"
 import AuditChainPanel from "./AuditChainPanel"
 
-// ... [Keep all your Interfaces exactly as they are] ...
+// 🆕 Environment-based URLs (works for both localhost and production)
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
+const WS_URL = process.env.NEXT_PUBLIC_WS_URL || "ws://localhost:8000/ws"
+
+// Interfaces
 interface IoTAsset {
   id: string
   name: string
@@ -24,6 +28,7 @@ interface IoTAsset {
   gasLevel: number
   learnedThreshold: number
 }
+
 interface Prediction {
   type: string
   current: number
@@ -32,6 +37,7 @@ interface Prediction {
   minutes_to_breach: number
   severity: "warning" | "critical"
 }
+
 interface SimilarIncident {
   id: string
   date: string
@@ -43,11 +49,13 @@ interface SimilarIncident {
   lessons: string
   similarity_score: number
 }
+
 interface ShiftAnalysis {
   fatigue_multiplier: number
   risk_level: "low" | "medium" | "high"
   factors: { night_shift: boolean; overtime: boolean; hours_worked: number }
 }
+
 interface SensorData {
   gas: number
   pressure: number
@@ -68,8 +76,6 @@ interface SensorData {
 
 export default function SensorDashboard() {
   const { chartHeight } = useLayout()
-
-  // 🆕 Audio Ref for Industrial Alarm
   const alarmSound = useRef<HTMLAudioElement | null>(null)
 
   const [data, setData] = useState<SensorData>({
@@ -88,7 +94,7 @@ export default function SensorDashboard() {
   const [systemEvents, setSystemEvents] = useState<
     { time: string; type: string }[]
   >([])
-  const [showGodMode, setShowGodMode] = useState(false) // 🆕 For Simulation Panel
+  const [showGodMode, setShowGodMode] = useState(false)
 
   const [assets, setAssets] = useState<IoTAsset[]>([
     {
@@ -115,7 +121,7 @@ export default function SensorDashboard() {
     null,
   )
 
-  // 🆕 Initialize Audio on Mount
+  // Initialize Audio
   useEffect(() => {
     alarmSound.current = new Audio(
       "https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3",
@@ -136,33 +142,31 @@ export default function SensorDashboard() {
   const riskScore = calculateRiskScore()
   const riskColor = riskScore > 70 ? "red" : riskScore > 40 ? "yellow" : "green"
 
-  // 🆕 Helper for Shortcuts & God Mode
+  // 🆕 Helper for Shortcuts & God Mode - Uses API_URL
   const triggerBackendAction = async (endpoint: string) => {
     try {
-      await fetch(`http://localhost:8000${endpoint}`, { method: "POST" })
+      await fetch(`${API_URL}${endpoint}`, { method: "POST" })
     } catch (error) {
       console.error("Action failed:", error)
     }
   }
 
+  // 🆕 Provision Asset - Uses API_URL
   const provisionNewAsset = async (
     name: string,
     protocol: string = "simulated",
   ) => {
     try {
-      const response = await fetch(
-        "http://localhost:8000/api/provision-asset",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            name,
-            protocol,
-            lat: 28.6139 + (Math.random() * 0.002 - 0.001),
-            lng: 77.209 + (Math.random() * 0.002 - 0.001),
-          }),
-        },
-      )
+      const response = await fetch(`${API_URL}/api/provision-asset`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name,
+          protocol,
+          lat: 28.6139 + (Math.random() * 0.002 - 0.001),
+          lng: 77.209 + (Math.random() * 0.002 - 0.001),
+        }),
+      })
       const result = await response.json()
       setAssets((prev) => [...prev, result.asset])
     } catch (error) {
@@ -170,17 +174,16 @@ export default function SensorDashboard() {
     }
   }
 
+  // 🆕 WebSocket - Uses WS_URL
   useEffect(() => {
-    const ws = new WebSocket(
-      process.env.NEXT_PUBLIC_WS_URL || "ws://localhost:8000/ws",
-    )
+    const ws = new WebSocket(WS_URL)
+
     ws.onopen = () => setStatus("Connected to PLC")
     ws.onmessage = (event) => {
       const parsed = JSON.parse(event.data)
       const now = new Date().toLocaleTimeString()
 
       setData((prev) => {
-        // 🆕 AUDIO ALERT: Play sound ONLY on transition from Safe -> Danger
         if (prev.permit_active && !parsed.permit_active && alarmSound.current) {
           alarmSound.current
             .play()
@@ -223,12 +226,13 @@ export default function SensorDashboard() {
       if (
         ws.readyState === WebSocket.OPEN ||
         ws.readyState === WebSocket.CONNECTING
-      )
+      ) {
         ws.close()
+      }
     }
   }, [])
 
-  // 🆕 KEYBOARD SHORTCUTS
+  // Keyboard Shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (
@@ -244,10 +248,11 @@ export default function SensorDashboard() {
     return () => window.removeEventListener("keydown", handleKeyDown)
   }, [])
 
-  const scrollToMap = () =>
+  const scrollToMap = () => {
     document
       .getElementById("map-section")
       ?.scrollIntoView({ behavior: "smooth", block: "start" })
+  }
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" })
 
   return (
@@ -273,7 +278,6 @@ export default function SensorDashboard() {
             </button>
           </div>
 
-          {/* 🆕 Shortcuts Hint Badge */}
           <div className="hidden md:flex items-center gap-2 text-[10px] text-slate-500 font-mono bg-slate-800/50 px-3 py-1.5 rounded-full border border-slate-700/50">
             <span className="text-blue-400 font-bold">[E]</span> Emergency
             <span className="text-slate-700">|</span>
@@ -323,7 +327,11 @@ export default function SensorDashboard() {
                       {pred.type.replace("_", " ").toUpperCase()}
                     </span>
                     <span
-                      className={`text-xs font-bold px-2 py-1 rounded ${pred.severity === "critical" ? "bg-red-500/20 text-red-400" : "bg-yellow-500/20 text-yellow-400"}`}
+                      className={`text-xs font-bold px-2 py-1 rounded ${
+                        pred.severity === "critical"
+                          ? "bg-red-500/20 text-red-400"
+                          : "bg-yellow-500/20 text-yellow-400"
+                      }`}
                     >
                       {pred.severity.toUpperCase()}
                     </span>
@@ -350,7 +358,11 @@ export default function SensorDashboard() {
         {/* Shift Fatigue */}
         {data.shift_analysis && (
           <div
-            className={`glass-card p-4 mb-4 border ${data.shift_analysis.risk_level === "high" ? "border-orange-500/50 bg-orange-900/10" : "border-green-500/50 bg-green-900/10"}`}
+            className={`glass-card p-4 mb-4 border ${
+              data.shift_analysis.risk_level === "high"
+                ? "border-orange-500/50 bg-orange-900/10"
+                : "border-green-500/50 bg-green-900/10"
+            }`}
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -368,7 +380,11 @@ export default function SensorDashboard() {
               </div>
               <div className="text-right">
                 <p
-                  className={`text-2xl font-black ${data.shift_analysis.risk_level === "high" ? "text-orange-400" : "text-green-400"}`}
+                  className={`text-2xl font-black ${
+                    data.shift_analysis.risk_level === "high"
+                      ? "text-orange-400"
+                      : "text-green-400"
+                  }`}
                 >
                   {data.shift_analysis.fatigue_multiplier.toFixed(1)}x
                 </p>
@@ -435,14 +451,71 @@ export default function SensorDashboard() {
           </div>
         </div>
 
-        {/* Provisioning Modal (Keep as is) */}
+        {/* Provisioning Modal */}
         {showProvisionModal && (
           <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[1000] flex items-center justify-center p-4">
-            {/* ... Modal Content ... */}
+            <div className="bg-slate-900 border border-slate-700 rounded-2xl p-8 max-w-md w-full shadow-2xl">
+              <h2 className="text-2xl font-bold text-white mb-2">
+                🔌 Provision New IoT Asset
+              </h2>
+              <p className="text-slate-400 text-sm mb-6">
+                Connect a new MQTT/Modbus sensor to the Digital Twin.
+              </p>
+
+              <input
+                type="text"
+                placeholder="Asset Name (e.g., Boiler Valve 3)"
+                className="w-full bg-slate-800 border border-slate-700 text-white p-3 rounded-lg mb-4 focus:outline-none focus:border-blue-500"
+                id="assetNameInput"
+              />
+
+              <div className="mb-4">
+                <label className="text-xs text-slate-400 uppercase font-bold mb-2 block">
+                  Connection Protocol
+                </label>
+                <select
+                  id="protocolSelect"
+                  className="w-full bg-slate-800 border border-slate-700 text-white p-3 rounded-lg focus:outline-none focus:border-blue-500"
+                >
+                  <option value="simulated">🎮 Simulated (Demo Mode)</option>
+                  <option value="mqtt">📡 MQTT (IoT Sensors)</option>
+                  <option value="modbus">⚙️ Modbus TCP (PLC/SCADA)</option>
+                </select>
+              </div>
+
+              <div className="flex justify-end gap-3">
+                <button
+                  onClick={() => setShowProvisionModal(false)}
+                  className="px-4 py-2 text-slate-400 hover:text-white"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => {
+                    const name =
+                      (
+                        document.getElementById(
+                          "assetNameInput",
+                        ) as HTMLInputElement
+                      ).value || "New Sensor"
+                    const protocol = (
+                      document.getElementById(
+                        "protocolSelect",
+                      ) as HTMLSelectElement
+                    ).value
+                    provisionNewAsset(name, protocol)
+                    setShowProvisionModal(false)
+                  }}
+                  className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg"
+                >
+                  Connect & Start Learning
+                </button>
+              </div>
+            </div>
           </div>
         )}
 
-        {/* 🆕 GOD MODE: Floating Simulation Panel */}
+        {/* GOD MODE: Floating Simulation Panel */}
         <button
           onClick={() => setShowGodMode(!showGodMode)}
           className="fixed bottom-6 left-6 z-50 bg-slate-900/90 hover:bg-slate-800 text-slate-400 hover:text-white p-3 rounded-full backdrop-blur-md border border-slate-700 shadow-xl transition-all hover:scale-110"
@@ -452,7 +525,7 @@ export default function SensorDashboard() {
         </button>
 
         {showGodMode && (
-          <div className="fixed bottom-20 left-6 z-50 bg-slate-950/95 border border-slate-700 p-4 rounded-xl backdrop-blur-xl shadow-2xl w-64 animate-in fade-in slide-in-from-bottom-4">
+          <div className="fixed bottom-20 left-6 z-50 bg-slate-950/95 border border-slate-700 p-4 rounded-xl backdrop-blur-xl shadow-2xl w-64">
             <h4 className="text-white font-bold text-sm mb-3 flex items-center gap-2">
               <span>🎮</span> Demo Controls
             </h4>

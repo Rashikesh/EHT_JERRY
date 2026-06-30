@@ -31,5 +31,17 @@ class ConfigManager:
     def set(self, key: str, value):
         setattr(self, key, value)
 
+class Config:
+    # MQTT Configuration
+    MQTT_BROKER = os.getenv("MQTT_BROKER", "localhost")
+    MQTT_PORT = int(os.getenv("MQTT_PORT", "1883"))
+    MQTT_USERNAME = os.getenv("MQTT_USERNAME", "")
+    MQTT_PASSWORD = os.getenv("MQTT_PASSWORD", "")
+    
+    # Frontend URL (for CORS)
+    FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3000")
+    
+    # WebSocket URL
+    WS_URL = os.getenv("WS_URL", "ws://localhost:8000/ws")
 # Global singleton
 config = ConfigManager()

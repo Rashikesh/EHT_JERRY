@@ -9,6 +9,7 @@ import json
 import time
 import datetime
 
+from core.config import Config
 from core.audit_chain import audit_chain
 from ai.predictive_analyzer import predictive_analyzer
 from ai.cctv_simulator import cctv_simulator
@@ -46,7 +47,10 @@ def update_temp(value):
     global current_temp
     current_temp = float(value)
 
-mqtt_manager.connect("localhost", 1883)
+mqtt_manager.connect( Config.MQTT_BROKER, 
+    Config.MQTT_PORT,
+    Config.MQTT_USERNAME,
+    Config.MQTT_PASSWORD)
 mqtt_manager.subscribe("factory/zone-a/gas", lambda data: update_gas(data['value']))
 mqtt_manager.subscribe("factory/zone-a/pressure", lambda data: update_pressure(data['value']))
 mqtt_manager.subscribe("factory/zone-a/temp", lambda data: update_temp(data['value']))
@@ -86,12 +90,15 @@ app = FastAPI(title="Industrial Safety Intelligence Agent", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        Config.FRONTEND_URL,
+        "http://localhost:3000",
+        "http://localhost:3001",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 # ✅ FIXED: Single broadcast loop with all features integrated
 async def broadcast_loop():
     global is_permit_active, cctv_alerts
