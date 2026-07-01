@@ -3,7 +3,7 @@ uvicorn[standard]==0.27.0
 websockets==12.0
 paho-mqtt<2.0.0
 python-multipart==0.0.6
-numpy>=1.26.0
+numpy>=2.0.0
 scikit-learn>=1.4.0
 langchain>=0.1.0
 langchain-community>=0.0.19
@@ -13,11 +13,9 @@ reportlab>=4.0.0
 pymodbus>=3.6.0
 asyncua>=1.1.0
 requests>=2.31.0
-
-# Authentication & Database
-python-jose[cryptography]==3.3.5
+python-jose[cryptography]==3.5.0
 passlib[bcrypt]==1.7.4
 python-dotenv==1.0.0
 sqlalchemy==2.0.25
 aiosqlite==0.19.0
-slowapi==0.1.9  # Rate limiting
+slowapi==0.1.9
