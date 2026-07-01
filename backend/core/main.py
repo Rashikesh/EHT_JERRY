@@ -22,7 +22,13 @@ from fastapi.responses import StreamingResponse
 from contextlib import asynccontextmanager
 from typing import List
 from io import BytesIO
-
+from database.database import init_db
+from auth.routes import router as auth_router
+from api.dashboard_routes import router as dashboard_router
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
+from fastapi import Request
 from protocols.plc_connector import PLCConnector
 from protocols.opcua_connector import OPCUAConnector
 from protocols.mqtt_manager import mqtt_manager
@@ -35,6 +41,23 @@ current_temp = 42.3
 is_permit_active = True
 active_permits = ["hot_work"]
 cctv_alerts = []
+limiter = Limiter(key_func=get_remote_address)
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    init_db()  # Create database tables
+    asyncio.create_task(broadcast_loop())
+    print("🚀 FastAPI Lifespan: Sensor broadcast task started.", flush=True)
+    yield
+    mqtt_manager.disconnect()
+    print("🛑 FastAPI Lifespan: Shutting down...", flush=True)
+
+# Add routers
+app.include_router(auth_router)
+app.include_router(dashboard_router)
 
 def update_gas(value):
     global current_gas

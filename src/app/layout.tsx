@@ -1,5 +1,6 @@
 // src/app/layout.tsx
 import type { Metadata } from "next";
+import { Providers } from "@/components/Providers";
 import "./globals.css";
 import { LayoutProvider } from "@/contexts/LayoutContext";
 
@@ -16,9 +17,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="m-0 p-0 bg-[#0f172a] overflow-hidden">
-        <LayoutProvider>
+        <Providers>
           {children}
-        </LayoutProvider>
+        </Providers>
       </body>
     </html>
   );

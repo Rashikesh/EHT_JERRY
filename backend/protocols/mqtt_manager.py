@@ -42,13 +42,18 @@ class MQTTManager:
         self.client.on_connect = on_connect
         self.client.on_message = on_message
     
-    def connect(self, host: str = "localhost", port: int = 1883):
-        """Connect to MQTT broker"""
+    def connect(self, host: str = "localhost", port: int = 1883, username: str = None, password: str = None):
+        """Connect to the MQTT broker"""
         try:
-            self.client.connect(host, port, 60)
+            # If username/password are provided, set them
+            if username and password:
+                self.client.username_pw_set(username, password)
+                
+            self.client.connect(host, port, keepalive=60)
             self.client.loop_start()
+            print(f"✅ Connected to MQTT Broker at {host}:{port}")
         except Exception as e:
-            print(f"❌ MQTT connection error: {e}")
+            print(f"❌ MQTT Connection failed: {e}")
     
     def subscribe(self, topic: str, callback: Callable):
         """Subscribe to a topic and register callback"""

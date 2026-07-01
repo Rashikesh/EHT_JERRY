@@ -1,6 +1,5 @@
 import threading
 import numpy as np
-from sklearn.ensemble import IsolationForest
 from collections import deque
 
 class AnomalyDetector:
@@ -19,12 +18,20 @@ class AnomalyDetector:
             return
         self._initialized = True
         
-        print("🤖 Initializing Isolation Forest Anomaly Detector...")
-        self.model = IsolationForest(contamination=0.05, random_state=42, n_estimators=100)
+        # 🚀 LAZY LOADING: Don't load sklearn yet!
+        self.model = None 
         self.baseline_readings = deque(maxlen=150)
         self.is_trained = False
         self.learning_mode = True
-        print("✅ Anomaly Detector ready. Collecting baseline data...")
+        print("🤖 Anomaly Detector initialized (Lazy Mode - saving memory).")
+
+    def _load_model(self):
+        """Only import and create the model when we actually need it"""
+        if self.model is None:
+            print("⏳ Loading Isolation Forest into memory...")
+            from sklearn.ensemble import IsolationForest
+            self.model = IsolationForest(contamination=0.05, random_state=42, n_estimators=100)
+            print("✅ Isolation Forest loaded.")
     
     def add_reading(self, gas: float, pressure: float, temp: float):
         if self.learning_mode:
@@ -34,6 +41,7 @@ class AnomalyDetector:
     
     def _train_model(self):
         try:
+            self._load_model() # Ensure model is loaded before training
             data = np.array(list(self.baseline_readings))
             self.model.fit(data)
             self.is_trained = True
@@ -53,6 +61,7 @@ class AnomalyDetector:
             }
         
         try:
+            self._load_model() # Ensure model is loaded
             reading = np.array([[gas, pressure, temp]])
             prediction = self.model.predict(reading)[0]
             score = self.model.decision_function(reading)[0]
