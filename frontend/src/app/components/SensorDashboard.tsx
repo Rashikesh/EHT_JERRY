@@ -171,63 +171,98 @@ export default function SensorDashboard() {
   }
 
   useEffect(() => {
-    const ws = new WebSocket(
-      process.env.NEXT_PUBLIC_WS_URL || "ws://localhost:8000/ws",
-    )
-    ws.onopen = () => setStatus("Connected to PLC")
-    ws.onmessage = (event) => {
-      const parsed = JSON.parse(event.data)
-      const now = new Date().toLocaleTimeString()
+    let ws: WebSocket
+    let reconnectTimeout: ReturnType<typeof setTimeout>
+    let pingInterval: ReturnType<typeof setInterval>
+    let isUnmounted = false
 
-      setData((prev) => {
-        // 🆕 AUDIO ALERT: Play sound ONLY on transition from Safe -> Danger
-        if (prev.permit_active && !parsed.permit_active && alarmSound.current) {
-          alarmSound.current
-            .play()
-            .catch((e) => console.log("Audio requires user interaction"))
-        }
-
-        if (prev.permit_active !== parsed.permit_active) {
-          const eventType = parsed.permit_active
-            ? "PERMIT ACTIVE"
-            : "PERMIT BLOCKED"
-          setSystemEvents((prevEvents) => [
-            ...prevEvents,
-            { time: now, type: eventType },
-          ])
-        }
-        return { ...prev, ...parsed }
-      })
-
-      setChartData((prev) => {
-        const newData = [...prev, { time: now, gas: parsed.gas }]
-        return newData.length > 50 ? newData.slice(-50) : newData
-      })
-
-      setAssets((prev) =>
-        prev.map((a) =>
-          a.id === "sensor-1"
-            ? {
-                ...a,
-                gasLevel: parsed.gas,
-                status: parsed.gas > 40 ? "critical" : "active",
-              }
-            : a,
-        ),
+    const connect = () => {
+      ws = new WebSocket(
+        process.env.NEXT_PUBLIC_WS_URL || "ws://localhost:8000/ws",
       )
+
+      ws.onopen = () => {
+        setStatus("Connected to PLC")
+        // keep the connection alive through idle-timeout proxies
+        pingInterval = setInterval(() => {
+          if (ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({ type: "ping" }))
+          }
+        }, 25000)
+      }
+
+      ws.onmessage = (event) => {
+        const parsed = JSON.parse(event.data)
+        const now = new Date().toLocaleTimeString()
+
+        setData((prev) => {
+          if (
+            prev.permit_active &&
+            !parsed.permit_active &&
+            alarmSound.current
+          ) {
+            alarmSound.current
+              .play()
+              .catch((e) => console.log("Audio requires user interaction"))
+          }
+
+          if (prev.permit_active !== parsed.permit_active) {
+            const eventType = parsed.permit_active
+              ? "PERMIT ACTIVE"
+              : "PERMIT BLOCKED"
+            setSystemEvents((prevEvents) => [
+              ...prevEvents,
+              { time: now, type: eventType },
+            ])
+          }
+          return { ...prev, ...parsed }
+        })
+
+        setChartData((prev) => {
+          const newData = [...prev, { time: now, gas: parsed.gas }]
+          return newData.length > 50 ? newData.slice(-50) : newData
+        })
+
+        setAssets((prev) =>
+          prev.map((a) =>
+            a.id === "sensor-1"
+              ? {
+                  ...a,
+                  gasLevel: parsed.gas,
+                  status: parsed.gas > 40 ? "critical" : "active",
+                }
+              : a,
+          ),
+        )
+      }
+
+      ws.onclose = () => {
+        setStatus("Disconnected")
+        clearInterval(pingInterval)
+        if (!isUnmounted) {
+          reconnectTimeout = setTimeout(connect, 3000)
+        }
+      }
+
+      ws.onerror = () => {
+        setStatus("Connection Error")
+      }
     }
-    ws.onclose = () => setStatus("Disconnected")
-    ws.onerror = () => setStatus("Connection Error")
+
+    connect()
 
     return () => {
+      isUnmounted = true
+      clearTimeout(reconnectTimeout)
+      clearInterval(pingInterval)
       if (
-        ws.readyState === WebSocket.OPEN ||
-        ws.readyState === WebSocket.CONNECTING
+        ws &&
+        (ws.readyState === WebSocket.OPEN ||
+          ws.readyState === WebSocket.CONNECTING)
       )
         ws.close()
     }
   }, [])
-
   // 🆕 KEYBOARD SHORTCUTS
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
