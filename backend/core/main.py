@@ -84,7 +84,7 @@ manager = ConnectionManager()
 # ==============================================================================
 async def run_visakhapatnam_scenario(gas_value: float) -> dict:
     """Drives the specific T+0 to T+20 minute demo timeline."""
-    global START_TIME  # ⚠️ MUST BE THE VERY FIRST LINE INSIDE THE FUNCTION
+    global START_TIME  # ⚠️ MUST BE THE VERY FIRST LINE
     
     elapsed = time.time() - START_TIME
     
@@ -140,19 +140,21 @@ async def run_visakhapatnam_scenario(gas_value: float) -> dict:
         
         return {"gas": 35.0, "permit_active": not is_blocked}
 
-    # Reset after 20 minutes (No 'global' keyword needed here anymore)
+    # Reset after 20 minutes
     else:
         START_TIME = time.time()
         compound_risk_engine.timeline_events = []
         compound_risk_engine.triggered_alerts = []
         return {"gas": 12.0, "permit_active": True}
+
+
 # ==============================================================================
 # Core Data Processing Pipeline
 # ==============================================================================
 async def on_asset_data(asset: IoTAsset):
     site_id = asset.site_id
     
-    global cctv_alerts
+    global cctv_alerts, is_permit_active
     new_alerts = cctv_simulator.check_for_alerts()
     if new_alerts:
         cctv_alerts.extend(new_alerts)
@@ -164,21 +166,47 @@ async def on_asset_data(asset: IoTAsset):
     pressure = next((a["gasLevel"] for a in site_assets if "pressure" in a["name"].lower()), 0.0)
     temperature = next((a["gasLevel"] for a in site_assets if "temp" in a["name"].lower()), 0.0)
     
-    # Run the Visakhapatnam Scenario
+    # 1. Run the Visakhapatnam Scenario
     scenario = await run_visakhapatnam_scenario(gas)
     engine_state = compound_risk_engine.get_state()
     
-    # Build payload
+    # 2. EDGE DETECTION: Only log to blockchain on TRUE state change (True -> False)
+    was_active = is_permit_active.get(site_id, True)
+    is_now_active = scenario["permit_active"]
+    
+    if not is_now_active and was_active:
+        # This only triggers ONCE when the permit goes from Active to Blocked
+        reason = engine_state["alerts"][-1]["reason"] if engine_state["alerts"] else "Unknown Compound Risk"
+        citation = engine_state["alerts"][-1]["citation"] if engine_state["alerts"] else "N/A"
+        
+        logger.warning(f"🚨 [{site_id}] CLOSED-LOOP INTERLOCK: Permit BLOCKED")
+        logger.info(f"   Reason: {reason}")
+        logger.info(f"   Citation: {citation}")
+        
+        audit_chain.add_block({
+            "site_id": site_id,
+            "event": "PERMIT_BLOCKED",
+            "reason": reason,
+            "citation": citation,
+            "gas_level": gas,
+            "action": "AUTOMATED_INTERLOCK"
+        })
+        logger.info(f"🔗 [{site_id}] Event logged to Immutable Audit Chain")
+    
+    # Update the persistent state
+    is_permit_active[site_id] = is_now_active
+
+    # 3. Build payload for frontend
     broadcast_payload = {
         "site_id": site_id,
-        "gas": round(scenario["gas"], 1),
+        "gas": round(gas, 1),
         "pressure": round(pressure, 1),
         "temperature": round(temperature, 1),
-        "permit_active": scenario["permit_active"],
+        "permit_active": is_now_active,
         "active_alerts": engine_state["alerts"],
         "timeline_events": engine_state["timeline"],
         "citation": engine_state["alerts"][-1]["citation"] if engine_state["alerts"] else None,
-        "ai_justification": engine_state["alerts"][-1]["citation"] if engine_state["alerts"] else "All parameters normal",
+        "ai_justification": f"BLOCKED: {engine_state['alerts'][-1]['reason']}\n\nCitation: {engine_state['alerts'][-1]['citation']}" if engine_state["alerts"] else "All parameters within normal operational limits.",
         "blocked_reason": engine_state["alerts"][-1]["rule_name"] if engine_state["alerts"] else None
     }
     
