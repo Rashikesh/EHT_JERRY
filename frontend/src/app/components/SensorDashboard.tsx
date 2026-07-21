@@ -155,8 +155,9 @@ export default function SensorDashboard() {
   const riskColor = riskScore > 70 ? "red" : riskScore > 40 ? "yellow" : "green"
 
   const triggerBackendAction = async (endpoint: string) => {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
     try {
-      await fetch(`http://localhost:8000${endpoint}`, { method: "POST" })
+      await fetch(`${apiUrl}${endpoint}`, { method: "POST" })
     } catch (error) {
       console.error("Action failed:", error)
     }
