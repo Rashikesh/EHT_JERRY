@@ -1,99 +1,123 @@
-/* frontend/src/styles/dashboard.css */
+/* ==========================================
+   INDUSTRIAL SAFETY DASHBOARD - ULTIMATE MODERN CSS
+   ========================================== */
 
-/* 1. Base Dashboard Background - Full Screen Edge-to-Edge */
-.dashboard-wrapper {
-  background-color: #0f172a;
-  background-image: 
-    radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), 
-    radial-gradient(at 50% 0%, hsla(225,39%,30%,1) 0, transparent 50%), 
-    radial-gradient(at 100% 0%, hsla(339,49%,30%,1) 0, transparent 50%);
+/* 1. CSS Variables for Maintainability & Theming */
+:root {
+  --bg-primary: #0f172a;
+  --bg-secondary: #1e293b;
+  --bg-glass: rgba(30, 41, 59, 0.6);
+  --border-glass: rgba(255, 255, 255, 0.08);
+  --border-glass-hover: rgba(59, 130, 246, 0.4);
   
-  /* FULL SCREEN DIMENSIONS */
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  
+  --accent-blue: #3b82f6;
+  --accent-green: #22c55e;
+  --accent-yellow: #f59e0b;
+  --accent-red: #ef4444;
+  
+  --glow-red: 0 0 30px rgba(239, 68, 68, 0.4);
+  --glow-green: 0 0 30px rgba(34, 197, 94, 0.3);
+  --glow-blue: 0 0 30px rgba(59, 130, 246, 0.3);
+  
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+}
+
+/* 2. Base Reset & Full-Screen Layout */
+html, body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow: hidden; /* Prevent body scroll, let wrapper handle it */
+}
+
+.dashboard-wrapper {
   width: 100vw;
   height: 100vh;
   margin: 0;
   padding: 2rem;
-  padding-bottom: 4rem; /* Extra space at bottom for scrolling */
+  padding-bottom: 4rem;
   
-  /* Layout & Scrolling */
+  background-color: var(--bg-primary);
+  background-image: 
+    radial-gradient(at 0% 0%, hsla(253, 16%, 15%, 1) 0, transparent 50%), 
+    radial-gradient(at 50% 0%, hsla(225, 39%, 25%, 1) 0, transparent 50%), 
+    radial-gradient(at 100% 0%, hsla(339, 49%, 20%, 1) 0, transparent 50%);
+  
   overflow-y: auto;
   overflow-x: hidden;
   box-sizing: border-box;
-  scroll-behavior: smooth; /* 🆕 Enables smooth scrolling for Jump to Map button */
-  
-  color: #f8fafc;
-  font-family: 'Inter', system-ui, sans-serif;
+  scroll-behavior: smooth;
 }
 
-/* Ensure the body/html doesn't have white margins */
-html, body {
-  margin: 0;
-  padding: 0;
-  background-color: #0f172a;
-  overflow: hidden;
+/* 3. Cross-Browser Custom Scrollbar (Chrome + Firefox) */
+.dashboard-wrapper {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
 }
 
-/* Custom Scrollbar */
 .dashboard-wrapper::-webkit-scrollbar {
   width: 8px;
 }
 .dashboard-wrapper::-webkit-scrollbar-track {
-  background: rgba(15, 23, 42, 0.5);
+  background: transparent;
 }
 .dashboard-wrapper::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.15);
   border-radius: 10px;
+  transition: background 0.2s ease;
 }
 .dashboard-wrapper::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.3);
 }
 
-/* 2. Glassmorphism Cards with Interactive Effects */
+/* 4. Premium Glassmorphism Cards */
 .glass-card {
-  background: rgba(30, 41, 59, 0.6);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 16px;
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  background: var(--bg-glass);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   margin-bottom: 1.5rem;
-  
-  /* 🆕 FIXED: Removed max-height: 400px and overflow: hidden which were clipping the map! */
   min-height: 120px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Subtle inner highlight for premium feel */
+.glass-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
 }
 
 .glass-card:hover {
-  border-color: rgba(59, 130, 246, 0.3);
-  transform: translateY(-2px); /* Reduced translateY to prevent layout shift */
+  border-color: var(--border-glass-hover);
+  transform: translateY(-2px);
   box-shadow: 0 12px 40px rgba(59, 130, 246, 0.15);
 }
 
-/* Golden Ratio Smooth Transitions */
-.glass-card, .alert-box, .resizable-container {
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Maintain aspect ratios */
-.golden-ratio-container {
-  aspect-ratio: 1.618 / 1;
-}
-
-/* Stat Box Specific Constraints */
-.stat-box {
-  min-height: 140px;
-  max-height: 180px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-/* 3. Typography & Stats with Dynamic Sizing */
+/* 5. Typography & Dynamic Stats */
 .stat-label {
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: #94a3b8;
+  color: var(--text-secondary);
   font-weight: 600;
   margin-bottom: 0.5rem;
 }
@@ -101,35 +125,33 @@ html, body {
 .stat-value {
   font-size: clamp(2rem, 4vw, 3rem);
   font-weight: 800;
-  color: #f8fafc;
+  color: var(--text-primary);
   transition: all 0.3s ease;
-  font-variant-numeric: tabular-nums;
+  font-variant-numeric: tabular-nums; /* Prevents jitter when numbers change */
   line-height: 1.2;
 }
 
 .stat-value.danger {
-  color: #ef4444;
-  text-shadow: 0 0 20px rgba(239, 68, 68, 0.8);
-  animation: shake 0.5s ease-in-out;
+  color: var(--accent-red);
+  text-shadow: 0 0 20px rgba(239, 68, 68, 0.6);
+  animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
 }
 
 @keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  25% { transform: translateX(-5px); }
-  75% { transform: translateX(5px); }
+  10%, 90% { transform: translate3d(-1px, 0, 0); }
+  20%, 80% { transform: translate3d(2px, 0, 0); }
+  30%, 50%, 70% { transform: translate3d(-3px, 0, 0); }
+  40%, 60% { transform: translate3d(3px, 0, 0); }
 }
 
-/* 4. Alert Box (Permit Panel) */
+/* 6. Alert & Permit Panels */
 .alert-box {
   text-align: left;
   padding: 2rem;
-  border-radius: 16px;
+  border-radius: var(--radius-lg);
   transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-  
-  /* 🆕 FIXED: Removed max-height: 700px so the permit panel can expand fully */
   min-height: 400px;
   height: 100%;
-  
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -139,13 +161,13 @@ html, body {
 .alert-box.safe {
   background: rgba(34, 197, 94, 0.05);
   border: 1px solid rgba(34, 197, 94, 0.2);
-  box-shadow: 0 0 30px rgba(34, 197, 94, 0.05);
+  box-shadow: var(--glow-green);
 }
 
 .alert-box.danger {
   background: rgba(239, 68, 68, 0.1);
   border: 1px solid rgba(239, 68, 68, 0.4);
-  box-shadow: 0 0 40px rgba(239, 68, 68, 0.3);
+  box-shadow: var(--glow-red);
   animation: pulse-red 2s infinite;
 }
 
@@ -156,7 +178,7 @@ html, body {
 
 .alert-box h2 {
   font-size: 1.2rem;
-  color: #94a3b8;
+  color: var(--text-secondary);
   margin-bottom: 1rem;
   flex-shrink: 0;
 }
@@ -164,7 +186,7 @@ html, body {
 .alert-box .status-text {
   font-size: clamp(1.5rem, 3vw, 2.5rem);
   font-weight: 800;
-  color: #f8fafc;
+  color: var(--text-primary);
   line-height: 1.2;
   margin-bottom: 1.5rem;
   flex-shrink: 0;
@@ -172,18 +194,21 @@ html, body {
 
 .justification-box {
   background: rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-md);
   padding: 1rem;
   margin-top: auto;
   max-height: 250px;
   overflow-y: auto;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace; /* Tech feel for logs */
+  font-size: 0.85rem;
+  line-height: 1.5;
 }
 
-/* 5. Modern Buttons with Interactive Effects */
+/* 7. Modern Interactive Buttons */
 .action-btn {
   padding: 0.75rem 1.5rem;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   font-weight: 600;
   font-size: 0.9rem;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -194,6 +219,12 @@ html, body {
   gap: 0.5rem;
   min-width: 180px;
   justify-content: center;
+}
+
+/* Accessibility: Visible focus rings */
+.action-btn:focus-visible {
+  outline: 2px solid var(--accent-blue);
+  outline-offset: 2px;
 }
 
 .action-btn.emergency {
@@ -218,15 +249,14 @@ html, body {
   box-shadow: 0 8px 30px rgba(59, 130, 246, 0.6);
 }
 
-/* 6. Chart Customization with Bounds */
+/* 8. Chart & Resizable Container Polish */
 .chart-container {
   background: rgba(15, 23, 42, 0.5);
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   padding: 1rem;
   min-height: 250px;
 }
 
-/* 7. Resizable Container with Proper Bounds */
 .resizable-container {
   position: relative;
   min-height: 250px !important;
@@ -239,23 +269,19 @@ html, body {
   user-select: none;
 }
 
-/* Resize Handles */
+/* Resize Handles (Hidden until hover) */
 .resize-handle {
   position: absolute;
   z-index: 10;
   opacity: 0;
   transition: opacity 0.2s ease;
 }
-
-.resizable-container:hover .resize-handle {
-  opacity: 1;
-}
+.resizable-container:hover .resize-handle { opacity: 1; }
 
 .resize-handle-nw { top: -4px; left: -4px; width: 12px; height: 12px; cursor: nw-resize; }
 .resize-handle-ne { top: -4px; right: -4px; width: 12px; height: 12px; cursor: ne-resize; }
 .resize-handle-sw { bottom: -4px; left: -4px; width: 12px; height: 12px; cursor: sw-resize; }
 .resize-handle-se { bottom: -4px; right: -4px; width: 12px; height: 12px; cursor: se-resize; }
-
 .resize-handle-n { top: -4px; left: 20px; right: 20px; height: 8px; cursor: n-resize; }
 .resize-handle-s { bottom: -4px; left: 20px; right: 20px; height: 8px; cursor: s-resize; }
 .resize-handle-e { top: 20px; right: -4px; bottom: 20px; width: 8px; cursor: e-resize; }
@@ -267,40 +293,30 @@ html, body {
   background: rgba(59, 130, 246, 0.6);
   border-radius: 2px;
 }
-
-.resize-handle-nw::after, .resize-handle-se::after,
-.resize-handle-ne::after, .resize-handle-sw::after {
-  width: 8px; height: 8px;
-}
-.resize-handle-n::after, .resize-handle-s::after {
-  width: 20px; height: 4px;
-  left: 50%; transform: translateX(-50%);
-}
-.resize-handle-e::after, .resize-handle-w::after {
-  width: 4px; height: 20px;
-  top: 50%; transform: translateY(-50%);
-}
+.resize-handle-nw::after, .resize-handle-se::after, .resize-handle-ne::after, .resize-handle-sw::after { width: 8px; height: 8px; }
+.resize-handle-n::after, .resize-handle-s::after { width: 20px; height: 4px; left: 50%; transform: translateX(-50%); }
+.resize-handle-e::after, .resize-handle-w::after { width: 4px; height: 20px; top: 50%; transform: translateY(-50%); }
 
 .resizable-container:hover {
   box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
 }
 
-/* 8. Map Container Constraints */
+/* 9. Map & Grid Constraints */
 .map-container {
-  height: 450px; /* 🆕 FIXED: Explicit height for Leaflet */
-  border-radius: 12px;
-  overflow: hidden; /* Keeps the map corners rounded */
+  height: 450px;
+  border-radius: var(--radius-md);
+  overflow: hidden;
   margin-bottom: 1rem;
+  border: 1px solid var(--border-glass);
 }
 
-/* 9. Grid Layout Constraints */
 .sensor-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 1.5rem;
 }
 
-/* 10. Recharts Customization */
+/* 10. Recharts Dark Mode Optimization */
 .recharts-cartesian-grid-horizontal line,
 .recharts-cartesian-grid-vertical line {
   stroke: rgba(255, 255, 255, 0.05);
@@ -308,59 +324,43 @@ html, body {
 
 .recharts-default-tooltip {
   background-color: rgba(15, 23, 42, 0.95) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
-  border-radius: 8px !important;
-  color: #f8fafc !important;
+  border: 1px solid var(--border-glass) !important;
+  border-radius: var(--radius-sm) !important;
+  color: var(--text-primary) !important;
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
 }
 
-/* 11. Connection Status Bar */
+.recharts-brush-slide { fill: rgba(59, 130, 246, 0.2); stroke: var(--accent-blue); }
+.recharts-brush-traveller rect { fill: var(--accent-blue); rx: 4; }
+
+/* 11. Connection Status Animations */
 .connection-status {
   transition: all 0.3s ease;
   min-height: 60px;
   display: flex;
   align-items: center;
 }
-
-.connection-status.connected {
-  animation: glow-green 3s ease-in-out infinite;
-}
-
-.connection-status.disconnected {
-  animation: glow-red 2s ease-in-out infinite;
-}
+.connection-status.connected { animation: glow-green 3s ease-in-out infinite; }
+.connection-status.disconnected { animation: glow-red 2s ease-in-out infinite; }
 
 @keyframes glow-green {
-  0%, 100% { box-shadow: 0 0 20px rgba(34, 197, 94, 0.2); }
-  50% { box-shadow: 0 0 30px rgba(34, 197, 94, 0.4); }
+  0%, 100% { box-shadow: 0 0 20px rgba(34, 197, 94, 0.1); }
+  50% { box-shadow: 0 0 30px rgba(34, 197, 94, 0.3); }
 }
-
 @keyframes glow-red {
-  0%, 100% { box-shadow: 0 0 20px rgba(239, 68, 68, 0.2); }
-  50% { box-shadow: 0 0 30px rgba(239, 68, 68, 0.4); }
+  0%, 100% { box-shadow: 0 0 20px rgba(239, 68, 68, 0.1); }
+  50% { box-shadow: 0 0 30px rgba(239, 68, 68, 0.3); }
 }
 
-/* Fullscreen Chart Overrides */
+/* 12. Fullscreen Chart Overrides */
 .fullscreen-chart {
-  border-radius: 24px !important;
+  border-radius: var(--radius-xl) !important;
   border: 2px solid rgba(59, 130, 246, 0.5) !important;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8) !important;
   cursor: default !important;
 }
-
-.fullscreen-chart .chart-container {
-  background: transparent;
-}
-
-/* Make brush look better in dark mode */
-.recharts-brush-slide {
-  fill: rgba(59, 130, 246, 0.2);
-  stroke: #3b82f6;
-}
-.recharts-brush-traveller rect {
-  fill: #3b82f6;
-  rx: 4;
-}
+.fullscreen-chart .chart-container { background: transparent; }
 
 /* Ensure last element has margin */
 .dashboard-wrapper > div > *:last-child {

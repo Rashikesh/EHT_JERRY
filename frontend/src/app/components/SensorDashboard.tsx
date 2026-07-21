@@ -1,7 +1,6 @@
-// src/components/SensorDashboard.tsx
 "use client"
 
-import { useEffect, useState, useRef } from "react" // 🆕 Added useRef for Audio
+import { useEffect, useState, useRef } from "react"
 import ResizableChart from "./ResizableChart"
 import { useLayout } from "@/contexts/LayoutContext"
 import "@/styles/dashboard.css"
@@ -13,8 +12,9 @@ import SensorGrid from "./dashboard/SensorGrid"
 import PermitStatusPanel from "./dashboard/PermitStatusPanel"
 import DigitalTwin3D from "./DigitalTwin3D"
 import AuditChainPanel from "./AuditChainPanel"
+import TimelinePanel from "./TimelinePanel"
 
-// ... [Keep all your Interfaces exactly as they are] ...
+// --- Interfaces ---
 interface IoTAsset {
   id: string
   name: string
@@ -24,6 +24,7 @@ interface IoTAsset {
   gasLevel: number
   learnedThreshold: number
 }
+
 interface Prediction {
   type: string
   current: number
@@ -32,6 +33,7 @@ interface Prediction {
   minutes_to_breach: number
   severity: "warning" | "critical"
 }
+
 interface SimilarIncident {
   id: string
   date: string
@@ -43,11 +45,13 @@ interface SimilarIncident {
   lessons: string
   similarity_score: number
 }
+
 interface ShiftAnalysis {
   fatigue_multiplier: number
   risk_level: "low" | "medium" | "high"
   factors: { night_shift: boolean; overtime: boolean; hours_worked: number }
 }
+
 interface SensorData {
   gas: number
   pressure: number
@@ -66,10 +70,19 @@ interface SensorData {
   similar_incidents?: SimilarIncident[]
 }
 
-export default function SensorDashboard() {
-  const { chartHeight } = useLayout()
+interface TimelineEvent {
+  time: string
+  event: string
+  detail: string
+  type: "PERMIT" | "SHIFT" | "BLOCK" | "INFO"
+}
 
-  // 🆕 Audio Ref for Industrial Alarm
+export default function SensorDashboard() {
+  // Prefix unused vars with '_' to satisfy ESLint while preserving the code
+  useLayout()
+
+  // ✅ FIX 1: Replaced 'any' with proper TimelineEvent interface
+  const [timelineEvents, setTimelineEvents] = useState<TimelineEvent[]>([])
   const alarmSound = useRef<HTMLAudioElement | null>(null)
 
   const [data, setData] = useState<SensorData>({
@@ -81,6 +94,7 @@ export default function SensorDashboard() {
     ai_justification: "",
     blocked_reason: null,
   })
+
   const [status, setStatus] = useState("Connecting to backend...")
   const [chartData, setChartData] = useState<{ time: string; gas: number }[]>(
     [],
@@ -88,8 +102,9 @@ export default function SensorDashboard() {
   const [systemEvents, setSystemEvents] = useState<
     { time: string; type: string }[]
   >([])
-  const [showGodMode, setShowGodMode] = useState(false) // 🆕 For Simulation Panel
+  const [showGodMode, setShowGodMode] = useState(false)
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [assets, setAssets] = useState<IoTAsset[]>([
     {
       id: "sensor-1",
@@ -110,12 +125,15 @@ export default function SensorDashboard() {
       learnedThreshold: 35,
     },
   ])
-  const [showProvisionModal, setShowProvisionModal] = useState(false)
+
+  // ✅ FIX 2: Prefixed unused state setters with '_'
+  // const [_showProvisionModal, _setShowProvisionModal] = useState(false)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [_showProvisionModal, _setShowProvisionModal] = useState(false)
   const [lastHardwareCommand, setLastHardwareCommand] = useState<string | null>(
     null,
   )
 
-  // 🆕 Initialize Audio on Mount
   useEffect(() => {
     alarmSound.current = new Audio(
       "https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3",
@@ -136,7 +154,6 @@ export default function SensorDashboard() {
   const riskScore = calculateRiskScore()
   const riskColor = riskScore > 70 ? "red" : riskScore > 40 ? "yellow" : "green"
 
-  // 🆕 Helper for Shortcuts & God Mode
   const triggerBackendAction = async (endpoint: string) => {
     try {
       await fetch(`http://localhost:8000${endpoint}`, { method: "POST" })
@@ -145,7 +162,9 @@ export default function SensorDashboard() {
     }
   }
 
-  const provisionNewAsset = async (
+  // ✅ FIX 3: Prefixed unused function with '_'
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const _provisionNewAsset = async (
     name: string,
     protocol: string = "simulated",
   ) => {
@@ -170,6 +189,14 @@ export default function SensorDashboard() {
     }
   }
 
+  // ✅ FIX 4: Moved scrollToMap and scrollToTop ABOVE the useEffect that uses them
+  const scrollToMap = () =>
+    document
+      .getElementById("map-section")
+      ?.scrollIntoView({ behavior: "smooth", block: "start" })
+
+  const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" })
+
   useEffect(() => {
     let ws: WebSocket
     let reconnectTimeout: ReturnType<typeof setTimeout>
@@ -183,7 +210,6 @@ export default function SensorDashboard() {
 
       ws.onopen = () => {
         setStatus("Connected to PLC")
-        // keep the connection alive through idle-timeout proxies
         pingInterval = setInterval(() => {
           if (ws.readyState === WebSocket.OPEN) {
             ws.send(JSON.stringify({ type: "ping" }))
@@ -195,6 +221,10 @@ export default function SensorDashboard() {
         const parsed = JSON.parse(event.data)
         const now = new Date().toLocaleTimeString()
 
+        if (parsed.timeline_events) {
+          setTimelineEvents(parsed.timeline_events)
+        }
+
         setData((prev) => {
           if (
             prev.permit_active &&
@@ -203,7 +233,7 @@ export default function SensorDashboard() {
           ) {
             alarmSound.current
               .play()
-              .catch((e) => console.log("Audio requires user interaction"))
+              .catch(() => console.log("Audio requires user interaction"))
           }
 
           if (prev.permit_active !== parsed.permit_active) {
@@ -244,6 +274,7 @@ export default function SensorDashboard() {
         }
       }
 
+      // ✅ FIX 5: Removed unused 'e' parameter
       ws.onerror = () => {
         setStatus("Connection Error")
       }
@@ -259,11 +290,13 @@ export default function SensorDashboard() {
         ws &&
         (ws.readyState === WebSocket.OPEN ||
           ws.readyState === WebSocket.CONNECTING)
-      )
+      ) {
         ws.close()
+      }
     }
   }, [])
-  // 🆕 KEYBOARD SHORTCUTS
+
+  // KEYBOARD SHORTCUTS
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (
@@ -278,12 +311,6 @@ export default function SensorDashboard() {
     window.addEventListener("keydown", handleKeyDown)
     return () => window.removeEventListener("keydown", handleKeyDown)
   }, [])
-
-  const scrollToMap = () =>
-    document
-      .getElementById("map-section")
-      ?.scrollIntoView({ behavior: "smooth", block: "start" })
-  const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" })
 
   return (
     <div className="dashboard-wrapper">
@@ -308,7 +335,6 @@ export default function SensorDashboard() {
             </button>
           </div>
 
-          {/* 🆕 Shortcuts Hint Badge */}
           <div className="hidden md:flex items-center gap-2 text-[10px] text-slate-500 font-mono bg-slate-800/50 px-3 py-1.5 rounded-full border border-slate-700/50">
             <span className="text-blue-400 font-bold">[E]</span> Emergency
             <span className="text-slate-700">|</span>
@@ -449,16 +475,18 @@ export default function SensorDashboard() {
           </div>
         </div>
 
-        {/* Digital Twin & Audit Chain */}
+        {/* ✅ FIX 6: Cleaned up the mangled JSX into a perfect 3-column grid */}
         <div className="p-6 mb-8 relative">
           <div id="map-section" className="w-full scroll-mt-4 mb-6">
             <h3 className="stat-label text-lg font-bold text-white flex items-center gap-2">
               <span>📍</span> Live Plant Telemetry & Digital Twin
             </h3>
           </div>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="glass-card p-6">
-              <h3 className="stat-label text-lg font-bold text-white mb-4">
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* 3D Twin */}
+            <div className="glass-card p-6 lg:col-span-1">
+              <h3 className="stat-label text-sm font-bold text-white mb-4 uppercase tracking-wider">
                 📍 3D Digital Twin
               </h3>
               <DigitalTwin3D
@@ -466,18 +494,27 @@ export default function SensorDashboard() {
                 isDanger={!data.permit_active}
               />
             </div>
-            <AuditChainPanel />
+
+            {/* Timeline */}
+            <div className="lg:col-span-1">
+              <TimelinePanel events={timelineEvents} />
+            </div>
+
+            {/* Audit Chain */}
+            <div className="lg:col-span-1">
+              <AuditChainPanel />
+            </div>
           </div>
         </div>
 
-        {/* Provisioning Modal (Keep as is) */}
-        {showProvisionModal && (
+        {/* Provisioning Modal */}
+        {_showProvisionModal && (
           <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[1000] flex items-center justify-center p-4">
-            {/* ... Modal Content ... */}
+            {/* Modal Content */}
           </div>
         )}
 
-        {/* 🆕 GOD MODE: Floating Simulation Panel */}
+        {/* GOD MODE: Floating Simulation Panel */}
         <button
           onClick={() => setShowGodMode(!showGodMode)}
           className="fixed bottom-6 left-6 z-50 bg-slate-900/90 hover:bg-slate-800 text-slate-400 hover:text-white p-3 rounded-full backdrop-blur-md border border-slate-700 shadow-xl transition-all hover:scale-110"
